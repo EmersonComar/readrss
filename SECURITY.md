@@ -19,7 +19,7 @@ que comprova que o binário foi compilado por este repositório a partir da tag 
 
 ```sh
 sha256sum -c SHA256SUMS
-gh attestation verify readrss-<versão>-linux-x86_64.tar.gz --repo <dono>/readrss
+gh attestation verify readrss-<versão>-linux-x86_64.tar.gz --repo EmersonComar/readrss
 ```
 
 ## O que o CI verifica

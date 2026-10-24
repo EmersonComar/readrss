@@ -10,7 +10,7 @@ use crate::i18n::{fill, gettext};
 
 pub const APP_NAME: &str = "readrss";
 pub const AUTHOR: &str = "Emerson Comar";
-pub const REPOSITORY_URL: &str = "";
+pub const REPOSITORY_URL: &str = "https://github.com/EmersonComar/readrss";
 pub const NEWSFLASH_URL: &str = "https://gitlab.com/news-flash/news_flash_gtk";
 
 /// Texto da página Detalhes do Sobre (marcação Pango): descrição, inspiração e desenvolvimento.

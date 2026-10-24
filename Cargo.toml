@@ -6,6 +6,8 @@ license = "GPL-3.0-or-later"
 authors = ["Emerson Comar"]
 description = "Leitor de feeds RSS/Atom para desktop (GTK4 + libadwaita)"
 readme = "README.md"
+repository = "https://github.com/EmersonComar/readrss"
+homepage = "https://github.com/EmersonComar/readrss"
 rust-version = "1.93"
 publish = false
 

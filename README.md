@@ -45,11 +45,11 @@ WebKitGTK 2.50+). Em distribuições mais antigas, compile a partir do código-f
 sudo apt install libgtk-4-1 libadwaita-1-0 libwebkitgtk-6.0-4 libsqlite3-0 gstreamer1.0-plugins-bad
 ```
 
-Baixe `readrss-<versão>-linux-x86_64.tar.gz` e `SHA256SUMS` da página de Releases, verifique e instale:
+Baixe `readrss-<versão>-linux-x86_64.tar.gz` e `SHA256SUMS` da [página de Releases](https://github.com/EmersonComar/readrss/releases), verifique e instale:
 
 ```sh
 sha256sum -c SHA256SUMS
-gh attestation verify readrss-<versão>-linux-x86_64.tar.gz --repo OWNER/readrss   # opcional
+gh attestation verify readrss-<versão>-linux-x86_64.tar.gz --repo EmersonComar/readrss   # opcional
 tar xzf readrss-<versão>-linux-x86_64.tar.gz
 cd readrss-<versão>-linux-x86_64
 ./install.sh                 # pede a senha do sudo apenas para copiar os arquivos

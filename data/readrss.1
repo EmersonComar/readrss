@@ -1,0 +1,38 @@
+.TH READRSS 1 "" "readrss" "User Commands"
+.SH NAME
+readrss \- desktop RSS/Atom feed reader
+.SH SYNOPSIS
+.B readrss
+.RB [ \-\-background ]
+.SH DESCRIPTION
+.B readrss
+is a GTK4/libadwaita feed reader. It shows the feed summary, extracts the full article or
+opens the original page inside the app, filters articles per feed by keywords or regular
+expressions and syncs in the background with desktop notifications.
+.PP
+Only one instance runs per user session: starting
+.B readrss
+again shows the window of the running instance.
+.SH OPTIONS
+.TP
+.B \-\-background
+Start without opening the window, syncing and notifying in the background. Used by the
+systemd user service.
+.TP
+.BR \-h ", " \-\-help
+Show the available options.
+.SH FILES
+.TP
+.I ~/.local/share/readrss/readrss.db
+Feeds, articles, filters and preferences (SQLite).
+.TP
+.I ~/.cache/readrss/icons/
+Cached website icons.
+.TP
+.I /usr/lib/systemd/user/readrss.service
+User service that starts with the graphical session. Disable it for your user with
+.BR "systemctl \-\-user mask readrss" .
+.SH SEE ALSO
+.BR systemctl (1)
+.PP
+https://github.com/EmersonComar/readrss

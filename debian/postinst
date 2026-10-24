@@ -1,0 +1,30 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ]; then
+    deb-systemd-helper --user unmask readrss.service >/dev/null || true
+    if deb-systemd-helper --quiet --user was-enabled readrss.service; then
+        deb-systemd-helper --user enable readrss.service >/dev/null || true
+    else
+        deb-systemd-helper --user update-state readrss.service >/dev/null || true
+    fi
+fi
+
+if [ "$1" = "configure" ]; then
+    if [ -e /opt/readrss ] || [ -e /etc/systemd/user/readrss.service ]; then
+        cat >&2 <<'MSG'
+readrss: há uma instalação manual (install.sh) em /opt/readrss. Ela tem prioridade sobre
+este pacote no menu de aplicativos e no serviço de segundo plano. Para removê-la:
+  sudo rm -rf /opt/readrss /usr/local/bin/readrss /etc/systemd/user/readrss.service \
+    /usr/local/share/applications/io.github.readrss.ReadRSS.desktop \
+    /usr/local/share/icons/hicolor/scalable/apps/io.github.readrss.ReadRSS.svg \
+    /usr/local/share/icons/hicolor/symbolic/apps/io.github.readrss.ReadRSS-symbolic.svg
+  systemctl --user daemon-reload
+MSG
+    fi
+    if [ -n "$2" ]; then
+        echo "readrss: a nova versão vale a partir do próximo login (ou: systemctl --user restart readrss)."
+    fi
+fi
+
+exit 0

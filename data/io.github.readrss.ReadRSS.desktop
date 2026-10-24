@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=readrss
+Comment=RSS/Atom feed reader
+Comment[pt_BR]=Leitor de feeds RSS/Atom
+Comment[es]=Lector de feeds RSS/Atom
+Exec=/usr/bin/readrss
+Icon=io.github.readrss.ReadRSS
+Terminal=false
+Categories=Network;News;Feed;
+Keywords=rss;atom;feed;news;notícias;noticias;
+StartupNotify=true
+StartupWMClass=io.github.readrss.ReadRSS
+X-GNOME-UsesNotifications=true

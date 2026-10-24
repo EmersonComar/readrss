@@ -20,7 +20,11 @@ que comprova que o binário foi compilado por este repositório a partir da tag 
 ```sh
 sha256sum -c SHA256SUMS
 gh attestation verify readrss-<versão>-linux-x86_64.tar.gz --repo EmersonComar/readrss
+gh attestation verify readrss_<versão>-1_amd64.deb --repo EmersonComar/readrss
 ```
+
+Pelo repositório APT, o `apt` confere sozinho a assinatura GPG do repositório (chave
+`1C99A7EB636500B38B66EC037998AF819108FCAA`), que nunca sai do servidor de publicação.
 
 ## O que o CI verifica
 

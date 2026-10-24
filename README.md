@@ -26,20 +26,46 @@ inteligência artificial para atender a algumas particularidades do autor.
 
 ## Instalação
 
-Há duas formas: baixar o binário pronto ou compilar a partir do código-fonte. As duas instalam o
-mesmo layout e ativam o serviço de segundo plano:
+Requer Ubuntu 26.04 ou equivalente (x86_64): GTK 4.18+, libadwaita 1.7+ e WebKitGTK 2.50+. Em outras
+distribuições, compile a partir do código-fonte.
 
-| Onde | O quê |
-|---|---|
-| `/opt/readrss` | binário (~5 MB) + traduções e ícones; usa GTK/WebKit do sistema |
-| `/usr/local/bin/readrss` | atalho para rodar `readrss` no terminal |
-| `/usr/local/share/applications`, `/usr/local/share/icons` | lançador e ícones |
-| `/etc/systemd/user/readrss.service` | serviço **de usuário**, ativado para quem instalou |
+### Repositório APT (recomendado)
 
-### Binário pronto (Ubuntu 26.04 ou equivalente, x86_64)
+Instala e mantém o readrss atualizado pelo `apt upgrade`, junto com o resto do sistema:
 
-O binário usa as bibliotecas do sistema e exige versões recentes (GTK 4.18+, libadwaita 1.7+,
-WebKitGTK 2.50+). Em distribuições mais antigas, compile a partir do código-fonte.
+```sh
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://repo.emersoncomar.com.br/repo-signing-key.asc | sudo gpg --dearmor -o /etc/apt/keyrings/readrss.gpg
+
+sudo tee /etc/apt/sources.list.d/readrss.sources > /dev/null <<EOF
+Types: deb
+URIs: https://repo.emersoncomar.com.br/readrss
+Suites: stable
+Components: main
+Signed-By: /etc/apt/keyrings/readrss.gpg
+EOF
+
+sudo apt update
+sudo apt install readrss
+```
+
+O pacote instala o binário em `/usr/bin/readrss`, o lançador, os ícones, a página de manual
+(`man readrss`) e ativa o serviço de segundo plano para todos os usuários a partir do próximo login.
+Atualizações passam a valer no login seguinte (ou com `systemctl --user restart readrss`).
+
+```sh
+systemctl --user mask readrss     # desliga o serviço só para o seu usuário
+sudo apt remove readrss           # remove (seus feeds e artigos continuam em ~/.local/share/readrss)
+```
+
+O mesmo `.deb` também está nas Releases, para instalar sem o repositório:
+`sudo apt install ./readrss_<versão>-1_amd64.deb`.
+
+### Binário pronto com instalador (`.tar.gz`)
+
+Instala em `/opt/readrss` (com atalho em `/usr/local/bin`, lançador e ícones em `/usr/local/share` e o
+serviço em `/etc/systemd/user`), sem o gerenciador de pacotes. Não use junto com o pacote APT: a
+instalação manual tem prioridade no menu e no serviço (o pacote avisa se encontrar uma).
 
 ```sh
 sudo apt install libgtk-4-1 libadwaita-1-0 libwebkitgtk-6.0-4 libsqlite3-0 gstreamer1.0-plugins-bad
@@ -158,10 +184,18 @@ adicione o código em `po/LINGUAS` e em `LANGUAGES` (`src/i18n.rs`).
 3. Rode `./scripts/update-translations.sh`, traduza as novas entradas em `po/*.po` e rode o script de novo.
 4. `cargo test` — há testes que falham se o changelog não tiver a versão nova ou se faltar tradução.
 5. Crie e envie a tag: `git tag v<versão> && git push origin v<versão>`.
+6. Quando o workflow terminar, publique o `.deb` no repositório APT, na VM (a chave de assinatura
+   nunca sai de lá):
+
+   ```sh
+   wget https://github.com/EmersonComar/readrss/releases/download/v<versão>/readrss_<versão>-1_amd64.deb
+   reprepro -b ~/projetos/repositorios/readrss includedeb stable readrss_<versão>-1_amd64.deb
+   rm readrss_<versão>-1_amd64.deb
+   ```
 
 O workflow `release.yml` roda as mesmas checagens do CI, confere se a tag bate com o `Cargo.toml`,
-compila num contêiner Ubuntu 26.04, gera o `.tar.gz`, o `SHA256SUMS` e o atestado de procedência, e
-publica a release.
+compila num contêiner Ubuntu 26.04, gera o `.tar.gz` e o `.deb` (validado pelo `lintian`, que bloqueia
+a publicação em caso de erro ou aviso), o `SHA256SUMS` e o atestado de procedência, e publica a release.
 
 ## Integração contínua e segurança
 
@@ -180,7 +214,7 @@ publica a release.
 - `symbolic/apps/io.github.readrss.ReadRSS-symbolic.svg` — versão monocromática de 16px
 
 O app registra essa pasta no tema de ícones ao iniciar (funciona sem instalar); o
-`install.sh` copia os arquivos para `/usr/local/share/icons`. Para o snap, aponte
+pacote `.deb` os instala em `/usr/share/icons` e o `install.sh` em `/usr/local/share/icons`. Para o snap, aponte
 `icon:` do `snapcraft.yaml` para o SVG principal e use `Icon=io.github.readrss.ReadRSS` no `.desktop`.
 
 ## Dados
@@ -209,7 +243,8 @@ src/
   constants.rs     ID do app e localização de traduções/ícones
   metrics.rs       memória e processos WebKit (usado nos testes)
 tests/             net, sync, i18n, reader, icons e gui (testes de unidade ficam nos próprios módulos)
-data/              locale/ (traduções compiladas) e icons/
+data/              locale/, icons/, lançador (.desktop), unit do systemd e página de manual
+debian/            scripts do pacote .deb (postinst/postrm), copyright e overrides do lintian
 po/                catálogos de tradução (pt_BR, es)
 tools/             extract-strings: extrator de textos traduzíveis
 scripts/           install.sh, package-release.sh, update-translations.sh, ci-install-deps.sh

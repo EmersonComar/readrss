@@ -63,40 +63,11 @@ quit_running_instance() {
 }
 
 write_desktop_file() {
-    cat > "$1" <<EOF
-[Desktop Entry]
-Type=Application
-Name=readrss
-Comment=Leitor de feeds RSS/Atom
-Comment[en]=RSS/Atom feed reader
-Comment[es]=Lector de feeds RSS/Atom
-Exec=$OPT_DIR/bin/readrss
-Icon=$APP_ID
-Terminal=false
-Categories=Network;News;Feed;
-Keywords=rss;atom;feed;news;notícias;noticias;
-StartupNotify=true
-StartupWMClass=$APP_ID
-X-GNOME-UsesNotifications=true
-EOF
+    sed "s#^Exec=/usr/bin/readrss#Exec=$OPT_DIR/bin/readrss#" "$payload/share/readrss/$APP_ID.desktop" > "$1"
 }
 
 write_service_file() {
-    cat > "$1" <<EOF
-[Unit]
-Description=readrss: sincronização de feeds RSS/Atom em segundo plano
-PartOf=graphical-session.target
-After=graphical-session.target
-
-[Service]
-Type=simple
-ExecStart=$OPT_DIR/bin/readrss --background
-Restart=on-failure
-RestartSec=10
-
-[Install]
-WantedBy=graphical-session.target
-EOF
+    sed "s#/usr/bin/readrss#$OPT_DIR/bin/readrss#" "$payload/share/readrss/$SERVICE" > "$1"
 }
 
 prepare_prebuilt() {
@@ -118,7 +89,7 @@ prepare_from_source() {
     payload="$stage/payload"
     install -Dm755 "$root/target/release/readrss" "$payload/bin/readrss"
     mkdir -p "$payload/share/readrss"
-    cp -R "$root/data/locale" "$root/data/icons" "$payload/share/readrss/"
+    cp -R "$root/data/locale" "$root/data/icons" "$root/data/$APP_ID.desktop" "$root/data/$SERVICE" "$payload/share/readrss/"
 }
 
 do_install() {

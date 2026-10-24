@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] && command -v deb-systemd-helper >/dev/null; then
+    deb-systemd-helper --user mask readrss.service >/dev/null || true
+fi
+
+if [ "$1" = "purge" ] && command -v deb-systemd-helper >/dev/null; then
+    deb-systemd-helper --user purge readrss.service >/dev/null || true
+    deb-systemd-helper --user unmask readrss.service >/dev/null || true
+fi
+
+exit 0

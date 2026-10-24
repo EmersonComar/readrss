@@ -35,8 +35,14 @@ jobs:
           test "$cargo_version" = "$tag_version"
       - name: Compilar
         run: cargo build --release --locked --package readrss
-      - name: Empacotar
-        run: scripts/package-release.sh "${GITHUB_REF_NAME#v}" dist
+      - name: Ferramentas de empacotamento
+        run: |
+          apt-get install -y -qq --no-install-recommends lintian >/dev/null
+          cargo install --locked cargo-deb@3.8.0
+      - name: Empacotar (.tar.gz e .deb)
+        run: PATH="$HOME/.cargo/bin:$PATH" scripts/package-release.sh "${GITHUB_REF_NAME#v}" dist
+      - name: Lintian
+        run: lintian --fail-on error,warning --tag-display-limit 0 dist/*.deb
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
@@ -59,20 +65,24 @@ jobs:
       - name: Atestado de procedência
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: dist/*.tar.gz
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.deb
       - name: Criar release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          archive="$(ls dist/*.tar.gz)"
+          archive="$(basename "$(ls dist/*.tar.gz)")"
+          deb="$(basename "$(ls dist/*.deb)")"
           cat > notes.md <<EOF
-          Binário pronto para Linux x86_64 (Ubuntu 26.04 ou equivalente). Instruções de instalação no README.
+          Linux x86_64 (Ubuntu 26.04 ou equivalente). Instruções de instalação no README:
+          repositório APT (recomendado), pacote \`$deb\` ou \`$archive\` com \`install.sh\`.
 
           Verificar o download:
 
           \`\`\`sh
           sha256sum -c SHA256SUMS
-          gh attestation verify $(basename "$archive") --repo $GITHUB_REPOSITORY
+          gh attestation verify $deb --repo $GITHUB_REPOSITORY
           \`\`\`
           EOF
           gh release create "$GITHUB_REF_NAME" dist/* \

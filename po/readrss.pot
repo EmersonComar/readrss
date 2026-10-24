@@ -1,0 +1,572 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: readrss\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/about.rs:20
+msgid "Inspired by {newsflash}."
+msgstr ""
+
+#: src/about.rs:22
+msgid "RSS/Atom feed reader for the Linux desktop"
+msgstr ""
+
+#: src/about.rs:24
+msgid "Developed with the help of artificial intelligence to meet some particular needs of the author."
+msgstr ""
+
+#: src/about.rs:61
+msgid "Version {version}"
+msgstr ""
+
+#: src/about.rs:62
+msgid "%m/%d/%Y"
+msgstr ""
+
+#: src/about.rs:78 src/window.rs:268
+msgid "Changelog"
+msgstr ""
+
+#: src/app.rs:55
+msgid "{n} hour"
+msgid_plural "{n} hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app.rs:57
+msgid "{n} minute"
+msgid_plural "{n} minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app.rs:62
+msgid "{n} new article"
+msgid_plural "{n} new articles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app.rs:75
+msgid "Start in the background without opening the window (used by the systemd service)"
+msgstr ""
+
+#: src/app.rs:223
+msgid "A sync is already in progress"
+msgstr ""
+
+#: src/app.rs:244
+msgid "No new articles"
+msgstr ""
+
+#: src/app.rs:249
+msgid "{n} feed failed (hover the warning icon for details)"
+msgid_plural "{n} feeds failed (hover the warning icons for details)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app.rs:261
+msgid " and {n} more"
+msgstr ""
+
+#: src/app.rs:278
+msgid "https://site.com or https://site.com/feed"
+msgstr ""
+
+#: src/app.rs:282
+msgid "Add feed"
+msgstr ""
+
+#: src/app.rs:283
+msgid "Enter the URL of the feed or the website; the feed is detected automatically."
+msgstr ""
+
+#: src/app.rs:288 src/feed_dialogs.rs:39 src/feed_dialogs.rs:125 src/window.rs:783
+msgid "Cancel"
+msgstr ""
+
+#: src/app.rs:289
+msgid "Add"
+msgstr ""
+
+#: src/app.rs:304
+msgid "Looking for the feed…"
+msgstr ""
+
+#: src/app.rs:318
+msgid "This feed is already subscribed"
+msgstr ""
+
+#: src/app.rs:321
+msgid "Could not add the feed: {error}"
+msgstr ""
+
+#: src/app.rs:334
+msgid "Checking the new address…"
+msgstr ""
+
+#: src/app.rs:343
+msgid "This address already belongs to another feed"
+msgstr ""
+
+#: src/app.rs:351
+msgid "The address was not changed: {error}"
+msgstr ""
+
+#: src/app.rs:363
+msgid "Feed updated"
+msgstr ""
+
+#: src/app.rs:372
+msgid "Import OPML"
+msgstr ""
+
+#: src/app.rs:379
+msgid "Invalid OPML: {error}"
+msgstr ""
+
+#: src/app.rs:387
+msgid "{n} feed imported ({skipped} already existed)"
+msgid_plural "{n} feeds imported ({skipped} already existed)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app.rs:398
+msgid "Export OPML"
+msgstr ""
+
+#: src/app.rs:404
+msgid "{n} feed exported"
+msgid_plural "{n} feeds exported"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app.rs:413 src/window.rs:267
+msgid "Preferences"
+msgstr ""
+
+#: src/app.rs:415
+msgid "General"
+msgstr ""
+
+#: src/app.rs:417
+msgid "System default"
+msgstr ""
+
+#: src/app.rs:420
+msgid "Language"
+msgstr ""
+
+#: src/app.rs:434
+msgid "Sync"
+msgstr ""
+
+#: src/app.rs:438
+msgid "Update interval"
+msgstr ""
+
+#: src/app.rs:450
+msgid "Notifications"
+msgstr ""
+
+#: src/app.rs:451
+msgid "Notify about new articles when the window is not focused"
+msgstr ""
+
+#: src/app.rs:452
+msgid "Run in background"
+msgstr ""
+
+#: src/app.rs:453
+msgid "Keep syncing after the window is closed (use “Quit” to exit)"
+msgstr ""
+
+#: src/changelog.rs:27
+msgid "Subscribe to RSS/Atom feeds by entering the feed or website address; the feed is detected automatically."
+msgstr ""
+
+#: src/changelog.rs:28
+msgid "Three reading modes: feed summary, full article extracted from the website, and the original page inside the app."
+msgstr ""
+
+#: src/changelog.rs:29
+msgid "Reliable website icons, validated and cached, with an initials avatar when no icon is available."
+msgstr ""
+
+#: src/changelog.rs:30
+msgid "Automatic sync every 5 minutes, 30 minutes or 1 hour, downloading only feeds that changed."
+msgstr ""
+
+#: src/changelog.rs:31
+msgid "Notifications for new articles and an option to keep syncing in the background."
+msgstr ""
+
+#: src/changelog.rs:32
+msgid "Unread and starred articles, search, and mark all as read."
+msgstr ""
+
+#: src/changelog.rs:33
+msgid "OPML import and export to migrate from other feed readers."
+msgstr ""
+
+#: src/changelog.rs:34
+msgid "Interface in Portuguese, English and Spanish, switchable without restarting."
+msgstr ""
+
+#: src/changelog.rs:35
+msgid "Keyboard shortcuts to navigate and read articles."
+msgstr ""
+
+#: src/changelog.rs:36
+msgid "About dialog and changelog in the main menu."
+msgstr ""
+
+#: src/changelog.rs:37
+msgid "Application icon, also used by the launcher."
+msgstr ""
+
+#: src/changelog.rs:38
+msgid "System installation in /opt with a background service that starts with the session and keeps syncing and notifying without the window open."
+msgstr ""
+
+#: src/changelog.rs:39
+msgid "Edit a feed's address and name from its context menu."
+msgstr ""
+
+#: src/changelog.rs:40
+msgid "Per-feed filters by keywords or regular expressions, to hide matching articles or show only them."
+msgstr ""
+
+#: src/changelog.rs:44
+msgid "Window buttons no longer disappear when the reader pane is made narrow."
+msgstr ""
+
+#: src/changelog.rs:45
+msgid "No more graphics warnings when maximizing or resizing the window."
+msgstr ""
+
+#: src/changelog.rs:46
+msgid "Notifications for a newly added feed show its name instead of its address."
+msgstr ""
+
+#: src/changelog.rs:47
+msgid "Reading articles from many websites no longer piles up browser processes and memory."
+msgstr ""
+
+#: src/changelog.rs:54
+msgid "Added"
+msgstr ""
+
+#: src/changelog.rs:55
+msgid "Changed"
+msgstr ""
+
+#: src/changelog.rs:56
+msgid "Fixed"
+msgstr ""
+
+#: src/feed_dialogs.rs:20
+msgid "Feed or website address"
+msgstr ""
+
+#: src/feed_dialogs.rs:22
+msgid "Name"
+msgstr ""
+
+#: src/feed_dialogs.rs:27
+msgid "Leave the name empty to use the title provided by the feed: {title}"
+msgstr ""
+
+#: src/feed_dialogs.rs:34
+msgid "Edit feed"
+msgstr ""
+
+#: src/feed_dialogs.rs:40 src/feed_dialogs.rs:126
+msgid "Save"
+msgstr ""
+
+#: src/feed_dialogs.rs:76
+msgid "Mode"
+msgstr ""
+
+#: src/feed_dialogs.rs:79
+msgid "Off"
+msgstr ""
+
+#: src/feed_dialogs.rs:80
+msgid "Hide articles that match"
+msgstr ""
+
+#: src/feed_dialogs.rs:81
+msgid "Show only articles that match"
+msgstr ""
+
+#: src/feed_dialogs.rs:86
+msgid "Use regular expressions"
+msgstr ""
+
+#: src/feed_dialogs.rs:87
+msgid "Each line is a regular expression"
+msgstr ""
+
+#: src/feed_dialogs.rs:113
+msgid "Keywords"
+msgstr ""
+
+#: src/feed_dialogs.rs:114
+msgid "One per line. Searched in the title and summary, ignoring case and accents. Plain words match whole words only."
+msgstr ""
+
+#: src/feed_dialogs.rs:134
+msgid "Filter “{title}”"
+msgstr ""
+
+#: src/feed_dialogs.rs:223
+msgid "No filter: all articles of this feed are shown."
+msgstr ""
+
+#: src/feed_dialogs.rs:228
+msgid "{hidden} of {total} current articles would be hidden."
+msgid_plural "{hidden} of {total} current articles would be hidden."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/feed_dialogs.rs:233
+msgid "Line {line}: invalid regular expression ({error})"
+msgstr ""
+
+#: src/html.rs:74
+msgid "This feed has no summary. Use “Full” to read the text."
+msgstr ""
+
+#: src/html.rs:76
+msgid "%m/%d/%Y %H:%M"
+msgstr ""
+
+#: src/html.rs:79
+msgid "Full article"
+msgstr ""
+
+#: src/net.rs:46
+msgid "timed out"
+msgstr ""
+
+#: src/net.rs:47
+msgid "connection failed"
+msgstr ""
+
+#: src/net.rs:48
+msgid "No RSS/Atom feed found on this page"
+msgstr ""
+
+#: src/net.rs:49
+msgid "Invalid feed: {error}"
+msgstr ""
+
+#: src/net.rs:50
+msgid "Could not extract the content of this page"
+msgstr ""
+
+#: src/sync.rs:136
+msgid "(untitled)"
+msgstr ""
+
+#: src/window.rs:103
+msgid "now"
+msgstr ""
+
+#. Translators: abbreviated "minutes ago" in the article list
+#: src/window.rs:105
+msgid "{n} min"
+msgstr ""
+
+#. Translators: abbreviated "hours ago" in the article list
+#: src/window.rs:107
+msgid "{n} h"
+msgstr ""
+
+#. Translators: abbreviated "days ago" in the article list
+#: src/window.rs:109
+msgid "{n} d"
+msgstr ""
+
+#. Translators: short date in the article list (strftime format)
+#: src/window.rs:111
+msgid "%m/%d/%y"
+msgstr ""
+
+#: src/window.rs:128 src/window.rs:495 src/window.rs:595
+msgid "Unread"
+msgstr ""
+
+#: src/window.rs:130
+msgid "Search titles and summaries"
+msgstr ""
+
+#: src/window.rs:143 src/window.rs:815
+msgid "Star (S)"
+msgstr ""
+
+#: src/window.rs:257
+msgid "Add feed (Ctrl+N)"
+msgstr ""
+
+#: src/window.rs:263
+msgid "Import OPML…"
+msgstr ""
+
+#: src/window.rs:264
+msgid "Export OPML…"
+msgstr ""
+
+#: src/window.rs:269
+msgid "About readrss"
+msgstr ""
+
+#: src/window.rs:272
+msgid "Quit"
+msgstr ""
+
+#: src/window.rs:278
+msgid "Main menu"
+msgstr ""
+
+#: src/window.rs:292
+msgid "Sync now (Ctrl+R)"
+msgstr ""
+
+#: src/window.rs:297
+msgid "Search (Ctrl+F)"
+msgstr ""
+
+#: src/window.rs:304 src/window.rs:969
+msgid "Mark all as read"
+msgstr ""
+
+#: src/window.rs:316
+msgid "Nothing here"
+msgstr ""
+
+#: src/window.rs:317
+msgid "No articles in this view."
+msgstr ""
+
+#: src/window.rs:328
+msgid "Summary"
+msgstr ""
+
+#: src/window.rs:328
+msgid "Summary from the feed"
+msgstr ""
+
+#: src/window.rs:329
+msgid "Full"
+msgstr ""
+
+#: src/window.rs:329
+msgid "Extract the full article from the site (F)"
+msgstr ""
+
+#: src/window.rs:330
+msgid "Website"
+msgstr ""
+
+#: src/window.rs:330
+msgid "Open the original page in the app"
+msgstr ""
+
+#: src/window.rs:341
+msgid "Open in browser (O)"
+msgstr ""
+
+#: src/window.rs:349
+msgid "Toggle read/unread (M)"
+msgstr ""
+
+#: src/window.rs:494 src/window.rs:594
+msgid "All articles"
+msgstr ""
+
+#: src/window.rs:496 src/window.rs:596
+msgid "Starred"
+msgstr ""
+
+#: src/window.rs:500
+msgid "Feeds"
+msgstr ""
+
+#: src/window.rs:545
+msgid "Filter active: some articles are hidden"
+msgstr ""
+
+#: src/window.rs:609
+msgid "{n} article"
+msgid_plural "{n} articles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/window.rs:768
+msgid "Filter saved: {n} article hidden"
+msgid_plural "Filter saved: {n} articles hidden"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/window.rs:770
+msgid "Filter removed"
+msgstr ""
+
+#: src/window.rs:780
+msgid "Remove feed?"
+msgstr ""
+
+#: src/window.rs:781
+msgid "“{title}” and all its articles will be deleted."
+msgstr ""
+
+#: src/window.rs:784
+msgid "Remove"
+msgstr ""
+
+#: src/window.rs:800
+msgid "“{title}” removed"
+msgstr ""
+
+#: src/window.rs:815
+msgid "Unstar (S)"
+msgstr ""
+
+#: src/window.rs:829
+msgid "Select an article to read"
+msgstr ""
+
+#: src/window.rs:830 src/window.rs:833
+msgid "This article has no link"
+msgstr ""
+
+#: src/window.rs:836
+msgid "Loading full article…"
+msgstr ""
+
+#: src/window.rs:908
+msgid "Could not extract the article: {error}"
+msgstr ""
+
+#: src/window.rs:911
+msgid "Failed to extract the article"
+msgstr ""
+
+#: src/window.rs:912
+msgid "View website"
+msgstr ""
+
+#: src/window.rs:967
+msgid "Edit…"
+msgstr ""
+
+#: src/window.rs:968
+msgid "Filter…"
+msgstr ""
+
+#: src/window.rs:972
+msgid "Remove feed…"
+msgstr ""
+

@@ -48,6 +48,9 @@ impl Mode {
     }
 }
 
+type WindowAction = (&'static str, fn(&Rc<Window>));
+type FeedAction = (&'static str, fn(&Rc<Window>, i64));
+
 pub struct ArticleRow {
     pub article: Article,
     pub row: gtk::ListBoxRow,
@@ -126,10 +129,8 @@ impl Window {
         let article_list = gtk::ListBox::new();
         article_list.set_show_separators(true);
         let list_title = adw::WindowTitle::new(&gettext("Unread"), "");
-        let search_entry = gtk::SearchEntry::builder()
-            .placeholder_text(gettext("Search titles and summaries"))
-            .hexpand(true)
-            .build();
+        let search_entry =
+            gtk::SearchEntry::builder().placeholder_text(gettext("Search titles and summaries")).hexpand(true).build();
         let search_bar = gtk::SearchBar::builder().child(&search_entry).build();
         search_bar.connect_entry(&search_entry);
         let sync_stack = gtk::Stack::new();
@@ -151,7 +152,8 @@ impl Window {
         }
         let content_stack = gtk::Stack::new();
         content_stack.add_named(&reader, Some("reader"));
-        let progress = gtk::ProgressBar::builder().css_classes(["osd"]).valign(gtk::Align::Start).visible(false).build();
+        let progress =
+            gtk::ProgressBar::builder().css_classes(["osd"]).valign(gtk::Align::Start).visible(false).build();
         let reader_pane = adw::ToolbarView::new();
         let toasts = adw::ToastOverlay::new();
 
@@ -193,7 +195,7 @@ impl Window {
     fn with_actions(this: Rc<Window>) -> Rc<Window> {
         let mut inner = Rc::try_unwrap(this).ok().expect("janela recém-criada");
         let weak_cell: Rc<RefCell<Weak<Window>>> = Rc::new(RefCell::new(Weak::new()));
-        let simple: [(&str, fn(&Rc<Window>)); 8] = [
+        let simple: [WindowAction; 8] = [
             ("mark-all-read", |w| w.mark_all_read()),
             ("open-browser", |w| {
                 let link = w.state.borrow().current.as_ref().map(|a| a.link.clone());
@@ -224,7 +226,7 @@ impl Window {
                 inner.article_actions.push(action);
             }
         }
-        let with_id: [(&str, fn(&Rc<Window>, i64)); 4] = [
+        let with_id: [FeedAction; 4] = [
             ("remove-feed", |w, id| w.remove_feed(id)),
             ("mark-feed-read", |w, id| {
                 w.db.mark_all_read(Some(id));
@@ -283,7 +285,8 @@ impl Window {
         sidebar_view.set_content(Some(&scrolled(&self.sidebar_list)));
         sidebar_view.set_size_request(220, -1);
 
-        let list_header = adw::HeaderBar::builder().show_start_title_buttons(false).show_end_title_buttons(false).build();
+        let list_header =
+            adw::HeaderBar::builder().show_start_title_buttons(false).show_end_title_buttons(false).build();
         list_header.set_title_widget(Some(&self.list_title));
         list_header.pack_start(
             &gtk::Button::builder()
@@ -410,9 +413,8 @@ impl Window {
         let weak = Rc::downgrade(self);
         self.reader.connect_decide_policy(move |_, decision, kind| {
             let Some(w) = weak.upgrade() else { return false };
-            let Some(action) = decision
-                .downcast_ref::<webkit6::NavigationPolicyDecision>()
-                .and_then(|nav| nav.navigation_action())
+            let Some(action) =
+                decision.downcast_ref::<webkit6::NavigationPolicyDecision>().and_then(|nav| nav.navigation_action())
             else {
                 return false;
             };
@@ -491,9 +493,30 @@ impl Window {
         self.sidebar_list.remove_all();
         let mut rows = Vec::new();
         let icon = |name: &str| gtk::Image::from_icon_name(name).upcast::<gtk::Widget>();
-        rows.push(self.source_row(Some(Source::All), &gettext("All articles"), icon("view-list-symbolic"), 0, None, false));
-        rows.push(self.source_row(Some(Source::Unread), &gettext("Unread"), icon("mail-unread-symbolic"), unread, None, false));
-        rows.push(self.source_row(Some(Source::Starred), &gettext("Starred"), icon("starred-symbolic"), starred, None, false));
+        rows.push(self.source_row(
+            Some(Source::All),
+            &gettext("All articles"),
+            icon("view-list-symbolic"),
+            0,
+            None,
+            false,
+        ));
+        rows.push(self.source_row(
+            Some(Source::Unread),
+            &gettext("Unread"),
+            icon("mail-unread-symbolic"),
+            unread,
+            None,
+            false,
+        ));
+        rows.push(self.source_row(
+            Some(Source::Starred),
+            &gettext("Starred"),
+            icon("starred-symbolic"),
+            starred,
+            None,
+            false,
+        ));
         let header = gtk::ListBoxRow::builder().selectable(false).activatable(false).build();
         header.set_child(Some(
             &gtk::Label::builder()
@@ -506,8 +529,14 @@ impl Window {
         ));
         rows.push(SidebarRow { source: None, row: header, icons: vec![] });
         for feed in &feeds {
-            let row = self.source_row(Some(Source::Feed(feed.id)), feed.display_title(), self.feed_icon(Some(feed), 20),
-                                      feed.unread, feed.last_error.as_deref(), feed.has_filter);
+            let row = self.source_row(
+                Some(Source::Feed(feed.id)),
+                feed.display_title(),
+                self.feed_icon(Some(feed), 20),
+                feed.unread,
+                feed.last_error.as_deref(),
+                feed.has_filter,
+            );
             let click = gtk::GestureClick::builder().button(gdk::BUTTON_SECONDARY).build();
             let (target, feed_id) = (row.row.clone(), feed.id);
             click.connect_pressed(move |_, _, _, _| show_feed_menu(&target, feed_id));
@@ -532,11 +561,20 @@ impl Window {
         self.reloading.set(false);
     }
 
-    fn source_row(&self, source: Option<Source>, title: &str, icon: gtk::Widget, count: i64, error: Option<&str>,
-                  filtered: bool) -> SidebarRow {
+    fn source_row(
+        &self,
+        source: Option<Source>,
+        title: &str,
+        icon: gtk::Widget,
+        count: i64,
+        error: Option<&str>,
+        filtered: bool,
+    ) -> SidebarRow {
         let row_box = gtk::Box::new(gtk::Orientation::Horizontal, 10);
         row_box.append(&icon);
-        row_box.append(&gtk::Label::builder().label(title).xalign(0.0).hexpand(true).ellipsize(pango::EllipsizeMode::End).build());
+        row_box.append(
+            &gtk::Label::builder().label(title).xalign(0.0).hexpand(true).ellipsize(pango::EllipsizeMode::End).build(),
+        );
         let mut icons = Vec::new();
         if filtered {
             row_box.append(
@@ -559,7 +597,12 @@ impl Window {
             icons.push("dialog-warning-symbolic".to_owned());
         }
         if count > 0 {
-            row_box.append(&gtk::Label::builder().label(count.to_string()).css_classes(["dim-label", "caption", "numeric"]).build());
+            row_box.append(
+                &gtk::Label::builder()
+                    .label(count.to_string())
+                    .css_classes(["dim-label", "caption", "numeric"])
+                    .build(),
+            );
         }
         SidebarRow { source, row: gtk::ListBoxRow::builder().child(&row_box).build(), icons }
     }
@@ -574,10 +617,10 @@ impl Window {
 
     fn texture(&self, path: &str) -> Option<gdk::Texture> {
         let modified = std::fs::metadata(path).and_then(|m| m.modified()).ok()?;
-        if let Some((cached_at, texture)) = self.textures.borrow().get(path) {
-            if *cached_at == modified {
-                return Some(texture.clone());
-            }
+        if let Some((cached_at, texture)) = self.textures.borrow().get(path)
+            && *cached_at == modified
+        {
+            return Some(texture.clone());
         }
         let texture = gdk::Texture::from_filename(path).ok()?;
         self.textures.borrow_mut().insert(path.to_owned(), (modified, texture.clone()));
@@ -587,7 +630,9 @@ impl Window {
     pub fn reload_articles(self: &Rc<Self>, keep_selection: bool) {
         let source = self.source();
         let feed_title = match source {
-            Source::Feed(id) => self.state.borrow().feeds.iter().find(|f| f.id == id).map(|f| f.display_title().to_owned()),
+            Source::Feed(id) => {
+                self.state.borrow().feeds.iter().find(|f| f.id == id).map(|f| f.display_title().to_owned())
+            }
             _ => None,
         };
         self.list_title.set_title(&match source {
@@ -645,7 +690,12 @@ impl Window {
         );
         let star = gtk::Image::builder().icon_name("starred-symbolic").css_classes(["accent"]).build();
         top.append(&star);
-        top.append(&gtk::Label::builder().label(relative_time(article.published)).css_classes(["caption", "dim-label"]).build());
+        top.append(
+            &gtk::Label::builder()
+                .label(relative_time(article.published))
+                .css_classes(["caption", "dim-label"])
+                .build(),
+        );
         let title = gtk::Label::builder()
             .label(&article.title)
             .xalign(0.0)
@@ -734,11 +784,11 @@ impl Window {
     fn sync_current_row(&self) {
         {
             let mut state = self.state.borrow_mut();
-            if let Some(current) = state.current.clone() {
-                if let Some(row) = state.rows.iter_mut().find(|r| r.article.id == current.id) {
-                    row.article = current;
-                    style_row(row);
-                }
+            if let Some(current) = state.current.clone()
+                && let Some(row) = state.rows.iter_mut().find(|r| r.article.id == current.id)
+            {
+                row.article = current;
+                style_row(row);
             }
         }
         self.update_reader_header();
@@ -818,11 +868,11 @@ impl Window {
     fn show_article(self: &Rc<Self>) {
         self.update_reader_header();
         let (article, mode) = (self.current(), self.mode());
-        if let (Some(article), Mode::Web) = (&article, mode) {
-            if !article.link.is_empty() {
-                self.open_site(&article.link);
-                return;
-            }
+        if let (Some(article), Mode::Web) = (&article, mode)
+            && !article.link.is_empty()
+        {
+            self.open_site(&article.link);
+            return;
         }
         self.close_site();
         let page = match (&article, mode) {
@@ -891,7 +941,7 @@ impl Window {
             let link = article.link.clone();
             let result = gio::spawn_blocking(move || net::extract_article(&net::Client::new(), &link))
                 .await
-                .unwrap_or_else(|_| Err(net::NetError::ExtractFailed));
+                .unwrap_or(Err(net::NetError::ExtractFailed));
             let Some(w) = weak.upgrade() else { return };
             let wanted = w.mode() == Mode::Full && w.current().is_some_and(|a| a.id == article.id);
             match result {
@@ -905,7 +955,8 @@ impl Window {
                     }
                 }
                 Err(error) if wanted => {
-                    let text = fill(&gettext("Could not extract the article: {error}"), &[("error", &error.describe())]);
+                    let text =
+                        fill(&gettext("Could not extract the article: {error}"), &[("error", &error.describe())]);
                     w.reader.load_html(&html::render_message(&text), None);
                     let toast = adw::Toast::builder()
                         .title(gettext("Failed to extract the article"))

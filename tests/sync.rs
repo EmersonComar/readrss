@@ -45,8 +45,12 @@ fn sync(f: &Fixture, ids: Option<Vec<i64>>) -> SyncReport {
 #[test]
 fn sync_inserts_then_uses_etag_and_reports_errors() {
     let web = FakeWeb::start();
-    let body = rss(&(simple_item("1", "One", "https://a.test/1") + &simple_item("2", "Two", "https://a.test/2")),
-                   "Feed A", &web.url("/"), "");
+    let body = rss(
+        &(simple_item("1", "One", "https://a.test/1") + &simple_item("2", "Two", "https://a.test/2")),
+        "Feed A",
+        &web.url("/"),
+        "",
+    );
     web.route("/a", move |req| {
         if req.headers.get("if-none-match").map(String::as_str) == Some("\"v1\"") {
             Response::new(304, "text/plain", "")

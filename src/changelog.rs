@@ -25,7 +25,9 @@ pub const RELEASES: &[Release] = &[Release {
     date: (2026, 10, 20),
     added: &[
         N_("Subscribe to RSS/Atom feeds by entering the feed or website address; the feed is detected automatically."),
-        N_("Three reading modes: feed summary, full article extracted from the website, and the original page inside the app."),
+        N_(
+            "Three reading modes: feed summary, full article extracted from the website, and the original page inside the app.",
+        ),
         N_("Reliable website icons, validated and cached, with an initials avatar when no icon is available."),
         N_("Automatic sync every 5 minutes, 30 minutes or 1 hour, downloading only feeds that changed."),
         N_("Notifications for new articles and an option to keep syncing in the background."),
@@ -35,7 +37,9 @@ pub const RELEASES: &[Release] = &[Release {
         N_("Keyboard shortcuts to navigate and read articles."),
         N_("About dialog and changelog in the main menu."),
         N_("Application icon, also used by the launcher."),
-        N_("System installation in /opt with a background service that starts with the session and keeps syncing and notifying without the window open."),
+        N_(
+            "System installation in /opt with a background service that starts with the session and keeps syncing and notifying without the window open.",
+        ),
         N_("Edit a feed's address and name from its context menu."),
         N_("Per-feed filters by keywords or regular expressions, to hide matching articles or show only them."),
     ],

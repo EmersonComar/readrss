@@ -1,5 +1,5 @@
-use chrono::{Local, TimeZone};
 use crate::i18n::gettext;
+use chrono::{Local, TimeZone};
 use url::Url;
 
 use crate::db::Article;
@@ -71,23 +71,38 @@ pub fn render_article(article: &Article, full: bool) -> String {
     let source = if full { article.full_content.as_deref().unwrap_or("") } else { &article.summary };
     let mut body = absolutize_links(source, &article.link);
     if body.trim().is_empty() {
-        body = format!("<p><em>{}</em></p>", escape(&gettext("This feed has no summary. Use “Full” to read the text.")));
+        body =
+            format!("<p><em>{}</em></p>", escape(&gettext("This feed has no summary. Use “Full” to read the text.")));
     }
     let date = format_date(article.published, &gettext("%m/%d/%Y %H:%M"));
     let meta: Vec<String> = [article.feed_title.as_str(), article.author.as_str(), date.as_str()]
-        .iter().filter(|p| !p.is_empty()).map(|p| escape(p)).collect();
-    let badge = if full { format!(r#"<span class="badge">{}</span>"#, escape(&gettext("Full article"))) } else { String::new() };
+        .iter()
+        .filter(|p| !p.is_empty())
+        .map(|p| escape(p))
+        .collect();
+    let badge = if full {
+        format!(r#"<span class="badge">{}</span>"#, escape(&gettext("Full article")))
+    } else {
+        String::new()
+    };
     format!(
         r#"<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><style>{CSS}</style></head><body>
 <header><h1 class="title"><a href="{link}">{title}</a></h1><div class="meta">{meta}</div>{badge}</header>
 <article>{body}</article></body></html>"#,
-        lang = lang(), link = escape(&article.link), title = escape(&article.title), meta = meta.join(" · "),
+        lang = lang(),
+        link = escape(&article.link),
+        title = escape(&article.title),
+        meta = meta.join(" · "),
     )
 }
 
 pub fn render_message(text: &str) -> String {
-    format!(r#"<!doctype html><html lang="{}"><head><meta charset="utf-8"><style>{CSS}</style></head>
-<body><p class="empty">{}</p></body></html>"#, lang(), escape(text))
+    format!(
+        r#"<!doctype html><html lang="{}"><head><meta charset="utf-8"><style>{CSS}</style></head>
+<body><p class="empty">{}</p></body></html>"#,
+        lang(),
+        escape(text)
+    )
 }
 
 pub fn absolutize_links(html: &str, base: &str) -> String {
@@ -98,10 +113,10 @@ pub fn absolutize_links(html: &str, base: &str) -> String {
     let doc = dom_query::Document::fragment(html);
     for node in doc.select("[href], [src]").nodes() {
         for name in ["href", "src"] {
-            if let Some(value) = node.attr(name) {
-                if let Ok(absolute) = base.join(value.trim()) {
-                    node.set_attr(name, absolute.as_str());
-                }
+            if let Some(value) = node.attr(name)
+                && let Ok(absolute) = base.join(value.trim())
+            {
+                node.set_attr(name, absolute.as_str());
             }
         }
     }

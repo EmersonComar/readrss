@@ -20,11 +20,8 @@ fn svg_attributes(path: &PathBuf) -> (String, Vec<Vec<(String, String)>>) {
     loop {
         match reader.read_event().unwrap() {
             Event::Start(e) | Event::Empty(e) => {
-                let attrs: Vec<(String, String)> = e
-                    .attributes()
-                    .flatten()
-                    .map(|a| (a.key.as_ref().to_string(), a.value.to_string()))
-                    .collect();
+                let attrs: Vec<(String, String)> =
+                    e.attributes().flatten().map(|a| (a.key.as_ref().to_string(), a.value.to_string())).collect();
                 if e.name().as_ref() == "svg" {
                     view_box = attrs.iter().find(|(k, _)| k == "viewBox").map(|(_, v)| v.clone()).unwrap_or_default();
                 }
@@ -63,8 +60,10 @@ fn symbolic_icons_are_recolorable() {
         let mut fills = BTreeSet::new();
         for attrs in &elements {
             for (key, value) in attrs {
-                assert!(!key.starts_with("stroke") && !(key == "style" && value.contains("stroke")),
-                        "{path:?}: o GTK só recolore preenchimentos ({key}={value})");
+                assert!(
+                    !key.starts_with("stroke") && (key != "style" || !value.contains("stroke")),
+                    "{path:?}: o GTK só recolore preenchimentos ({key}={value})"
+                );
                 if key == "fill" {
                     fills.insert(value.clone());
                 }

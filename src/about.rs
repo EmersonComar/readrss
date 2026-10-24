@@ -21,7 +21,9 @@ pub fn details_markup() -> String {
     [
         escape(&gettext("RSS/Atom feed reader for the Linux desktop")),
         inspired,
-        escape(&gettext("Developed with the help of artificial intelligence to meet some particular needs of the author.")),
+        escape(&gettext(
+            "Developed with the help of artificial intelligence to meet some particular needs of the author.",
+        )),
     ]
     .join("\n\n")
 }
@@ -74,12 +76,8 @@ pub fn show_changelog(parent: &impl IsA<gtk::Widget>) -> adw::Dialog {
     let view = adw::ToolbarView::new();
     view.add_top_bar(&adw::HeaderBar::new());
     view.set_content(Some(&page));
-    let dialog = adw::Dialog::builder()
-        .title(gettext("Changelog"))
-        .child(&view)
-        .content_width(600)
-        .content_height(640)
-        .build();
+    let dialog =
+        adw::Dialog::builder().title(gettext("Changelog")).child(&view).content_width(600).content_height(640).build();
     dialog.present(Some(parent));
     dialog
 }
@@ -94,7 +92,10 @@ mod tests {
         let link = format!("<a href=\"{NEWSFLASH_URL}\">NewsFlash</a>");
         assert!(markup.contains(&link));
         let plain = markup.replace(&link, "NewsFlash");
-        assert!(gtk::pango::parse_markup(&plain, '\0').is_ok(), "links à parte (extensão do GtkLabel), o resto é Pango válido: {markup}");
+        assert!(
+            gtk::pango::parse_markup(&plain, '\0').is_ok(),
+            "links à parte (extensão do GtkLabel), o resto é Pango válido: {markup}"
+        );
         assert!(markup.contains("artificial intelligence"));
     }
 }

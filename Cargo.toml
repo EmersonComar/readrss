@@ -5,6 +5,8 @@ edition = "2024"
 license = "GPL-3.0-or-later"
 authors = ["Emerson Comar"]
 description = "Leitor de feeds RSS/Atom para desktop (GTK4 + libadwaita)"
+readme = "README.md"
+rust-version = "1.93"
 publish = false
 
 [workspace]
@@ -29,7 +31,7 @@ gtk = { version = "0.11", package = "gtk4", features = ["v4_18"] }
 webkit6 = { version = "0.6", features = ["v2_50"] }
 rusqlite = "0.40"
 feed-rs = "3"
-ureq = { version = "3", default-features = false, features = ["native-tls", "gzip"] }
+ureq = { version = "3", default-features = false, features = ["native-tls-no-default", "gzip"] }
 dom_smoothie = "0.18"
 dom_query = "0.28"
 gettext-rs = { version = "0.8", features = ["gettext-system"] }

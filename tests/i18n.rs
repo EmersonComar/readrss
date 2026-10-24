@@ -151,7 +151,10 @@ fn every_message_is_translated_and_keeps_placeholders() {
                 _ => missing.push(msgid),
             }
         }
-        assert!(missing.is_empty(), "sem tradução em {lang} (rode scripts/update-translations.sh e traduza po/{lang}.po): {missing:?}");
+        assert!(
+            missing.is_empty(),
+            "sem tradução em {lang} (rode scripts/update-translations.sh e traduza po/{lang}.po): {missing:?}"
+        );
     }
 }
 

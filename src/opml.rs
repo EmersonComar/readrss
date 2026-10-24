@@ -2,8 +2,8 @@
 
 use std::path::Path;
 
-use quick_xml::{Reader, XmlVersion};
 use quick_xml::events::Event;
+use quick_xml::{Reader, XmlVersion};
 
 use crate::db::Feed;
 use crate::html::escape;
@@ -16,9 +16,11 @@ pub fn parse_opml(path: &Path) -> Result<Vec<(String, String)>, String> {
     loop {
         match reader.read_event().map_err(|e| e.to_string())? {
             Event::Start(element) | Event::Empty(element) if element.name().as_ref() == "outline" => {
-                let (mut url, mut title, mut label): (Option<String>, Option<String>, Option<String>) = (None, None, None);
+                let (mut url, mut title, mut label): (Option<String>, Option<String>, Option<String>) =
+                    (None, None, None);
                 for attribute in element.attributes().flatten() {
-                    let value: String = attribute.normalized_value(XmlVersion::Implicit1_0).map_err(|e| e.to_string())?.into_owned();
+                    let value: String =
+                        attribute.normalized_value(XmlVersion::Implicit1_0).map_err(|e| e.to_string())?.into_owned();
                     match attribute.key.as_ref() {
                         "xmlUrl" => url = Some(value.trim().to_owned()),
                         "title" => title = Some(value),
@@ -104,7 +106,8 @@ mod tests {
     fn write_then_parse_roundtrip() {
         let dir = TempDir::new();
         let path = dir.path().join("out.opml");
-        let feeds = [feed(1, "https://a.test/feed", "A & B <news>", "https://a.test/"), feed(2, "https://b.test/feed", "", "")];
+        let feeds =
+            [feed(1, "https://a.test/feed", "A & B <news>", "https://a.test/"), feed(2, "https://b.test/feed", "", "")];
         write_opml(&path, &feeds).unwrap();
         assert_eq!(
             parse_opml(&path).unwrap(),

@@ -58,12 +58,8 @@ pub const MIGRATIONS: &[&str] = &[r#"
     );
 "#];
 
-pub const DEFAULT_SETTINGS: &[(&str, &str)] = &[
-    ("sync_interval_min", "30"),
-    ("notifications", "1"),
-    ("run_in_background", "1"),
-    ("language", "system"),
-];
+pub const DEFAULT_SETTINGS: &[(&str, &str)] =
+    &[("sync_interval_min", "30"), ("notifications", "1"), ("run_in_background", "1"), ("language", "system")];
 
 const FEED_TITLE_SQL: &str = "COALESCE(NULLIF(f.custom_title, ''), NULLIF(f.title, ''), f.url)";
 const VISIBLE_SQL: &str = "(a.is_hidden = 0 OR a.is_starred = 1)";
@@ -233,8 +229,15 @@ impl Db {
 
     /// Título e site só são sobrescritos quando o feed informa algo; ETag, Last-Modified e o
     /// erro são gravados como vierem.
-    pub fn update_feed_meta(&self, feed_id: i64, title: &str, site_url: &str, etag: Option<&str>,
-                            modified: Option<&str>, error: Option<&str>) {
+    pub fn update_feed_meta(
+        &self,
+        feed_id: i64,
+        title: &str,
+        site_url: &str,
+        etag: Option<&str>,
+        modified: Option<&str>,
+        error: Option<&str>,
+    ) {
         let _ = self.conn.execute(
             "UPDATE feeds SET title = COALESCE(NULLIF(?, ''), title), site_url = COALESCE(NULLIF(?, ''), site_url),
                               etag = ?, modified = ?, last_error = ?, last_fetched = ?
@@ -244,10 +247,9 @@ impl Db {
     }
 
     pub fn set_feed_error(&self, feed_id: i64, error: &str) {
-        let _ = self.conn.execute(
-            "UPDATE feeds SET last_error = ?, last_fetched = ? WHERE id = ?",
-            params![error, now(), feed_id],
-        );
+        let _ = self
+            .conn
+            .execute("UPDATE feeds SET last_error = ?, last_fetched = ? WHERE id = ?", params![error, now(), feed_id]);
     }
 
     pub fn set_feed_icon(&self, feed_id: i64, icon_path: Option<&str>) {
@@ -402,7 +404,12 @@ impl Db {
         self.conn.query_row(&sql, [], |r| Ok((r.get(0)?, r.get(1)?))).unwrap_or((0, 0))
     }
 
-    fn query<T, P: rusqlite::Params>(&self, sql: &str, params: P, map: impl FnMut(&Row) -> rusqlite::Result<T>) -> Vec<T> {
+    fn query<T, P: rusqlite::Params>(
+        &self,
+        sql: &str,
+        params: P,
+        map: impl FnMut(&Row) -> rusqlite::Result<T>,
+    ) -> Vec<T> {
         let Ok(mut stmt) = self.conn.prepare(sql) else { return Vec::new() };
         stmt.query_map(params, map).map(|rows| rows.filter_map(Result::ok).collect()).unwrap_or_default()
     }
@@ -513,15 +520,22 @@ mod tests {
         db.insert_articles(a, &[article("old", 100.0, "Linux news", "s"), article("new", 300.0, "t", "s")]);
         db.insert_articles(b, &[article("mid", 200.0, "t", "about linux")]);
         assert_eq!(all(&db).iter().map(|x| x.published).collect::<Vec<_>>(), vec![300.0, 200.0, 100.0]);
-        assert!(db.list_articles(&ArticleQuery { feed_id: Some(b), ..Default::default() }).iter().all(|x| x.feed_id == b));
+        assert!(
+            db.list_articles(&ArticleQuery { feed_id: Some(b), ..Default::default() }).iter().all(|x| x.feed_id == b)
+        );
 
         let first = all(&db)[0].id;
         db.set_read(first, true);
         db.set_starred(first, true);
-        assert!(!db.list_articles(&ArticleQuery { unread_only: true, ..Default::default() }).iter().any(|x| x.id == first));
+        assert!(
+            !db.list_articles(&ArticleQuery { unread_only: true, ..Default::default() }).iter().any(|x| x.id == first)
+        );
         assert_eq!(db.list_articles(&ArticleQuery { starred_only: true, ..Default::default() })[0].id, first);
-        let mut found: Vec<_> = db.list_articles(&ArticleQuery { search: "linux", ..Default::default() })
-            .into_iter().map(|x| x.title).collect();
+        let mut found: Vec<_> = db
+            .list_articles(&ArticleQuery { search: "linux", ..Default::default() })
+            .into_iter()
+            .map(|x| x.title)
+            .collect();
         found.sort();
         assert_eq!(found, vec!["Linux news", "t"]);
     }
@@ -557,7 +571,10 @@ mod tests {
         let a = db.add_feed("https://a.test/feed", "Imported").unwrap();
         db.update_feed_meta(a, "", "", Some("e1"), Some("m1"), None);
         let feed = db.get_feed(a).unwrap();
-        assert_eq!((feed.title.as_str(), feed.etag.as_deref(), feed.modified.as_deref()), ("Imported", Some("e1"), Some("m1")));
+        assert_eq!(
+            (feed.title.as_str(), feed.etag.as_deref(), feed.modified.as_deref()),
+            ("Imported", Some("e1"), Some("m1"))
+        );
         db.set_feed_error(a, "HTTP 500");
         assert_eq!(db.get_feed(a).unwrap().last_error.as_deref(), Some("HTTP 500"));
         db.update_feed_meta(a, "Real", "https://a.test/", None, None, None);
@@ -583,8 +600,11 @@ mod tests {
             let conn = Connection::open(&path).unwrap();
             conn.execute_batch(SCHEMA).unwrap();
             conn.execute("INSERT INTO feeds (url, title) VALUES ('https://a.test/feed', 'A')", []).unwrap();
-            conn.execute("INSERT INTO articles (feed_id, guid, title, published, is_starred) VALUES (1, 'g', 't', 1, 1)", [])
-                .unwrap();
+            conn.execute(
+                "INSERT INTO articles (feed_id, guid, title, published, is_starred) VALUES (1, 'g', 't', 1, 1)",
+                [],
+            )
+            .unwrap();
         }
         let db = Db::open(&path).unwrap();
         assert_eq!(db.user_version(), MIGRATIONS.len() as i64);
@@ -701,6 +721,12 @@ pub mod tempdir {
 
         pub fn path(&self) -> &Path {
             &self.0
+        }
+    }
+
+    impl Default for TempDir {
+        fn default() -> Self {
+            Self::new()
         }
     }
 

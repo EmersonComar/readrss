@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      gtk-rs:
+        patterns: ["gtk4", "libadwaita", "webkit6", "glib*", "gio*", "gdk*", "pango*", "cairo*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

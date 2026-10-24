@@ -19,8 +19,15 @@ fn discover_accepts_feed_url() {
 #[test]
 fn discover_finds_alternate_link_in_site_html() {
     let web = FakeWeb::start();
-    web.add("/", Response::new(200, "text/html", r#"<html><head><link rel="stylesheet" href="/s.css">
-        <link rel="alternate" type="application/rss+xml" href="/feed.xml"></head><body>hi</body></html>"#));
+    web.add(
+        "/",
+        Response::new(
+            200,
+            "text/html",
+            r#"<html><head><link rel="stylesheet" href="/s.css">
+        <link rel="alternate" type="application/rss+xml" href="/feed.xml"></head><body>hi</body></html>"#,
+        ),
+    );
     assert_eq!(net::discover_feed_url(&Client::new(), &web.url("/")), Ok(web.url("/feed.xml")));
 }
 
@@ -39,9 +46,13 @@ fn fetch_parses_metadata_and_entries() {
     let items = simple_item("a", "First", "https://site.test/a") + &simple_item("b", "Second", "https://site.test/b");
     web.add(
         "/feed.xml",
-        Response::new(200, "application/rss+xml", rss(&items, "My Feed", "https://site.test/", "https://site.test/logo.png"))
-            .header("ETag", "\"v1\"")
-            .header("Last-Modified", "Mon"),
+        Response::new(
+            200,
+            "application/rss+xml",
+            rss(&items, "My Feed", "https://site.test/", "https://site.test/logo.png"),
+        )
+        .header("ETag", "\"v1\"")
+        .header("Last-Modified", "Mon"),
     );
     let result = net::fetch_feed(&Client::new(), &web.url("/feed.xml"), None, None).unwrap();
     assert!(!result.not_modified);
@@ -82,8 +93,14 @@ fn fetch_errors() {
 #[test]
 fn entry_prefers_full_content_and_has_fallbacks() {
     let web = FakeWeb::start();
-    let items = item("a", "T", "https://site.test/a", "short", "<p>much longer full content</p>", "Mon, 19 Oct 2026 10:00:00 GMT")
-        + &item("", "", "https://site.test/no-guid", "s", "", "")
+    let items = item(
+        "a",
+        "T",
+        "https://site.test/a",
+        "short",
+        "<p>much longer full content</p>",
+        "Mon, 19 Oct 2026 10:00:00 GMT",
+    ) + &item("", "", "https://site.test/no-guid", "s", "", "")
         + &item("f", "Future", "https://site.test/f", "s", "", "Fri, 01 Jan 2100 00:00:00 GMT");
     web.add("/feed.xml", feed_xml(&items, &web));
     let before = now();
@@ -98,11 +115,18 @@ fn entry_prefers_full_content_and_has_fallbacks() {
 #[test]
 fn atom_feed_is_supported() {
     let web = FakeWeb::start();
-    web.add("/atom", Response::new(200, "application/atom+xml", r#"<?xml version="1.0" encoding="utf-8"?>
+    web.add(
+        "/atom",
+        Response::new(
+            200,
+            "application/atom+xml",
+            r#"<?xml version="1.0" encoding="utf-8"?>
         <feed xmlns="http://www.w3.org/2005/Atom"><title>Atom Feed</title><link href="https://atom.test/"/>
         <id>urn:x</id><updated>2026-10-19T10:00:00Z</updated>
         <entry><title>Entry</title><link href="https://atom.test/1"/><id>urn:1</id>
-        <updated>2026-10-19T10:00:00Z</updated><summary>s</summary></entry></feed>"#));
+        <updated>2026-10-19T10:00:00Z</updated><summary>s</summary></entry></feed>"#,
+        ),
+    );
     let result = net::fetch_feed(&Client::new(), &web.url("/atom"), None, None).unwrap();
     assert_eq!(result.title, "Atom Feed");
     assert_eq!((result.articles[0].guid.as_str(), result.articles[0].link.as_str()), ("urn:1", "https://atom.test/1"));
@@ -118,8 +142,15 @@ fn assert_png_64(path: Option<String>) {
 fn icon_prefers_largest_declared_icon() {
     let web = FakeWeb::start();
     let dir = TempDir::new();
-    web.add("/", Response::new(200, "text/html", r#"<html><head><link rel="icon" sizes="16x16" href="/small.png">
-        <link rel="icon" sizes="192x192" href="/big.png"></head></html>"#));
+    web.add(
+        "/",
+        Response::new(
+            200,
+            "text/html",
+            r#"<html><head><link rel="icon" sizes="16x16" href="/small.png">
+        <link rel="icon" sizes="192x192" href="/big.png"></head></html>"#,
+        ),
+    );
     web.add("/small.png", Response::new(200, "image/png", image_bytes("png", 16)));
     web.add("/big.png", Response::new(200, "image/png", image_bytes("png", 192)));
     assert_png_64(net::resolve_icon(&Client::new(), &web.url("/feed"), &web.url("/"), &[], dir.path()));
@@ -130,8 +161,15 @@ fn icon_prefers_largest_declared_icon() {
 fn icon_skips_broken_candidates_and_falls_back_to_favicon() {
     let web = FakeWeb::start();
     let dir = TempDir::new();
-    web.add("/", Response::new(200, "text/html", r#"<html><head><link rel="apple-touch-icon" href="/touch.png">
-        <link rel="icon" href="/icon.png"></head></html>"#));
+    web.add(
+        "/",
+        Response::new(
+            200,
+            "text/html",
+            r#"<html><head><link rel="apple-touch-icon" href="/touch.png">
+        <link rel="icon" href="/icon.png"></head></html>"#,
+        ),
+    );
     web.add("/touch.png", Response::new(200, "text/html", "<html>not an image</html>"));
     web.add("/icon.png", Response::new(200, "image/png", b"\x89PNG garbage".to_vec()));
     web.add("/favicon.ico", Response::new(200, "image/x-icon", image_bytes("ico", 32)));
@@ -145,7 +183,13 @@ fn icon_from_feed_image_origin_fallback_and_none() {
     let dir = TempDir::new();
     web.add("/site/", Response::new(200, "text/html", "<html><head></head></html>"));
     web.add("/logo.png", Response::new(200, "image/png", image_bytes("png", 48)));
-    assert_png_64(net::resolve_icon(&Client::new(), &web.url("/feed"), &web.url("/site/"), &[web.url("/logo.png")], dir.path()));
+    assert_png_64(net::resolve_icon(
+        &Client::new(),
+        &web.url("/feed"),
+        &web.url("/site/"),
+        &[web.url("/logo.png")],
+        dir.path(),
+    ));
 
     let origin = FakeWeb::start();
     origin.add("/favicon.ico", Response::new(200, "image/x-icon", image_bytes("ico", 16)));
@@ -205,17 +249,27 @@ fn describe_errors_and_user_agent() {
 
 #[test]
 fn clean_extracted_strips_attributes() {
-    assert_eq!(net::clean_extracted(r#"intro<p class="x" style="y" id="z">hi <b>bold</b></p>"#), "intro<p>hi <b>bold</b></p>");
+    assert_eq!(
+        net::clean_extracted(r#"intro<p class="x" style="y" id="z">hi <b>bold</b></p>"#),
+        "intro<p>hi <b>bold</b></p>"
+    );
 }
 
 #[test]
 fn guid_fallback_uses_the_alternate_link() {
     let web = FakeWeb::start();
-    web.add("/atom", Response::new(200, "application/atom+xml", r#"<?xml version="1.0" encoding="utf-8"?>
+    web.add(
+        "/atom",
+        Response::new(
+            200,
+            "application/atom+xml",
+            r#"<?xml version="1.0" encoding="utf-8"?>
         <feed xmlns="http://www.w3.org/2005/Atom"><title>A</title><id>urn:x</id><updated>2026-10-19T10:00:00Z</updated>
         <entry><title>Podcast</title><updated>2026-10-19T10:00:00Z</updated>
           <link rel="enclosure" href="https://atom.test/audio.mp3"/>
-          <link rel="alternate" href="https://atom.test/episode"/></entry></feed>"#));
+          <link rel="alternate" href="https://atom.test/episode"/></entry></feed>"#,
+        ),
+    );
     let article = &net::fetch_feed(&Client::new(), &web.url("/atom"), None, None).unwrap().articles[0];
     assert_eq!(article.guid, "https://atom.test/episode");
     assert_eq!(article.link, "https://atom.test/episode");

@@ -15,17 +15,20 @@ const PREVIEW_DELAY: Duration = Duration::from_millis(250);
 const MODES: [Option<Mode>; 3] = [None, Some(Mode::Hide), Some(Mode::Only)];
 
 /// Edita URL e nome; `on_save(url, nome)` recebe os textos já sem espaços nas pontas.
-pub fn show_edit_feed(parent: &impl IsA<gtk::Widget>, feed: &Feed, on_save: impl Fn(String, String) + 'static)
-    -> adw::AlertDialog {
+pub fn show_edit_feed(
+    parent: &impl IsA<gtk::Widget>,
+    feed: &Feed,
+    on_save: impl Fn(String, String) + 'static,
+) -> adw::AlertDialog {
     let url_row = adw::EntryRow::builder().title(gettext("Feed or website address")).text(&feed.url).build();
-    let name_row = adw::EntryRow::builder()
-        .title(gettext("Name"))
-        .text(feed.custom_title.as_deref().unwrap_or_default())
-        .build();
+    let name_row =
+        adw::EntryRow::builder().title(gettext("Name")).text(feed.custom_title.as_deref().unwrap_or_default()).build();
     let fallback = if feed.title.is_empty() { &feed.url } else { &feed.title };
     let group = adw::PreferencesGroup::builder()
-        .description(fill(&gettext("Leave the name empty to use the title provided by the feed: {title}"),
-                          &[("title", fallback)]))
+        .description(fill(
+            &gettext("Leave the name empty to use the title provided by the feed: {title}"),
+            &[("title", fallback)],
+        ))
         .build();
     group.add(&url_row);
     group.add(&name_row);
@@ -69,8 +72,12 @@ pub struct FilterDialog {
     pending: RefCell<Option<glib::SourceId>>,
 }
 
-pub fn show_filter_feed(parent: &impl IsA<gtk::Widget>, db: Rc<Db>, feed: &Feed,
-                        on_saved: impl Fn(usize, bool) + 'static) -> Rc<FilterDialog> {
+pub fn show_filter_feed(
+    parent: &impl IsA<gtk::Widget>,
+    db: Rc<Db>,
+    feed: &Feed,
+    on_saved: impl Fn(usize, bool) + 'static,
+) -> Rc<FilterDialog> {
     let current = db.get_filter(feed.id);
     let mode_row = adw::ComboRow::builder()
         .title(gettext("Mode"))
@@ -103,7 +110,8 @@ pub fn show_filter_feed(parent: &impl IsA<gtk::Widget>, db: Rc<Db>, feed: &Feed,
         .css_classes(["card"])
         .hscrollbar_policy(gtk::PolicyType::Never)
         .build();
-    let error_label = gtk::Label::builder().xalign(0.0).wrap(true).css_classes(["error"]).visible(false).margin_top(8).build();
+    let error_label =
+        gtk::Label::builder().xalign(0.0).wrap(true).css_classes(["error"]).visible(false).margin_top(8).build();
     let preview_label = gtk::Label::builder().xalign(0.0).wrap(true).css_classes(["dim-label"]).margin_top(8).build();
 
     let settings = adw::PreferencesGroup::new();
@@ -225,13 +233,18 @@ impl FilterDialog {
         };
         match self.db.preview_filter(self.feed_id, &filter) {
             Ok((hidden, total)) => {
-                let text = ngettext("{hidden} of {total} current articles would be hidden.",
-                                    "{hidden} of {total} current articles would be hidden.", hidden as u32);
+                let text = ngettext(
+                    "{hidden} of {total} current articles would be hidden.",
+                    "{hidden} of {total} current articles would be hidden.",
+                    hidden as u32,
+                );
                 self.preview_label.set_label(&fill(&text, &[("hidden", &hidden), ("total", &total)]));
             }
             Err(error) => {
-                let text = fill(&gettext("Line {line}: invalid regular expression ({error})"),
-                                &[("line", &error.line), ("error", &error.message)]);
+                let text = fill(
+                    &gettext("Line {line}: invalid regular expression ({error})"),
+                    &[("line", &error.line), ("error", &error.message)],
+                );
                 self.error_label.set_label(&text);
                 self.error_label.set_visible(true);
                 self.preview_label.set_label("");

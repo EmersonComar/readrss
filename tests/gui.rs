@@ -58,10 +58,10 @@ fn run_steps(app: &Rc<App>, steps: Vec<Step>, args: &[&str]) {
     glib::timeout_add_local(Duration::from_millis(250), move || {
         assert!(Instant::now() < deadline, "cenário excedeu o tempo limite");
         let mut queue = steps.borrow_mut();
-        if let Some(mut current) = queue.pop_front() {
-            if !current(&runner) {
-                queue.push_front(current);
-            }
+        if let Some(mut current) = queue.pop_front()
+            && !current(&runner)
+        {
+            queue.push_front(current);
         }
         if queue.is_empty() {
             runner.application.quit();
@@ -94,12 +94,24 @@ fn synced(app: &Rc<App>) -> bool {
 fn main_flow() {
     let web = FakeWeb::start();
     let story = web.url("/story-1");
-    let feed_body = rss(&(simple_item("1", "First story", &story) + &simple_item("2", "Second story", "https://site.test/2")),
-                        "Test Site", &web.url("/"), "");
+    let feed_body = rss(
+        &(simple_item("1", "First story", &story) + &simple_item("2", "Second story", "https://site.test/2")),
+        "Test Site",
+        &web.url("/"),
+        "",
+    );
     web.add("/feed", Response::new(200, "application/rss+xml", feed_body));
-    web.add("/story-1", Response::new(200, "text/html", format!(
-        "<html><body><article><h1>Story</h1><p>{}</p></article></body></html>",
-        "Full story paragraph with plenty of words to be extracted by the reader. ".repeat(8))));
+    web.add(
+        "/story-1",
+        Response::new(
+            200,
+            "text/html",
+            format!(
+                "<html><body><article><h1>Story</h1><p>{}</p></article></body></html>",
+                "Full story paragraph with plenty of words to be extracted by the reader. ".repeat(8)
+            ),
+        ),
+    );
     let dir = TempDir::new();
     let app = App::new(config(&dir));
     app.db.add_feed(&web.url("/feed"), "");
@@ -110,93 +122,119 @@ fn main_flow() {
     let old = old_window.clone();
     let id2 = first_id.clone();
     let id3 = first_id.clone();
-    run_steps(&app, vec![
-        wait(synced),
-        step(|app| {
-            let theme = gtk::IconTheme::for_display(&WidgetExt::display(&win(app).window));
-            assert!(theme.has_icon(APP_ID) && theme.has_icon(&format!("{APP_ID}-symbolic")), "ícone embutido");
-            win(app).select_source(Source::All);
-        }),
-        step(move |app| {
-            assert_eq!(titles(app), vec!["First story", "Second story"]);
-            let first = win(app).articles().into_iter().find(|a| a.title == "First story").unwrap();
-            id.set(first.id);
-            win(app).select_article(first.id);
-        }),
-        step(move |app| {
-            let current = win(app).current().unwrap();
-            assert!(current.title == "First story" && current.is_read);
-            assert_eq!(app.db.counts().0, 1);
-            act(app, "win.toggle-star", None);
-            assert!(app.db.get_article(id2.get()).unwrap().is_starred);
-            win(app).mode_group.set_active_name(Some(Mode::Full.name()));
-        }),
-        wait(move |app| app.db.get_article(id3.get()).and_then(|a| a.full_content).is_some_and(|c| c.contains("Full story paragraph"))),
-        step(|app| {
-            let w = win(app);
-            w.mode_group.set_active_name(Some(Mode::Web.name()));
-            let site = w.site_view.borrow().clone().expect("WebView do modo Site");
-            assert!(WebViewExt::settings(&site).unwrap().enables_javascript());
-            assert!(site.web_context() != w.reader.web_context(), "contexto próprio e descartável");
-            assert!(!WebViewExt::settings(&w.reader).unwrap().enables_javascript());
-        }),
-        step(|app| {
-            win(app).mode_group.set_active_name(Some(Mode::Summary.name()));
-            assert!(win(app).site_view.borrow().is_none());
-        }),
-        step(move |app| {
-            *old.borrow_mut() = Some(win(app).window.clone());
-            let dialog = app.show_preferences().unwrap();
-            app.change_language("es", &dialog);
-        }),
-        pause(2),
-        step(move |app| {
-            assert!(Some(win(app).window.clone()) != *old_window.borrow(), "janela recriada");
-            assert_eq!(win(app).list_title.title(), "Todos los artículos");
-            assert_eq!(app.db.get_setting("language"), "es");
-            if let Some(dialog) = win(app).window.visible_dialog() {
+    run_steps(
+        &app,
+        vec![
+            wait(synced),
+            step(|app| {
+                let theme = gtk::IconTheme::for_display(&WidgetExt::display(&win(app).window));
+                assert!(theme.has_icon(APP_ID) && theme.has_icon(&format!("{APP_ID}-symbolic")), "ícone embutido");
+                win(app).select_source(Source::All);
+            }),
+            step(move |app| {
+                assert_eq!(titles(app), vec!["First story", "Second story"]);
+                let first = win(app).articles().into_iter().find(|a| a.title == "First story").unwrap();
+                id.set(first.id);
+                win(app).select_article(first.id);
+            }),
+            step(move |app| {
+                let current = win(app).current().unwrap();
+                assert!(current.title == "First story" && current.is_read);
+                assert_eq!(app.db.counts().0, 1);
+                act(app, "win.toggle-star", None);
+                assert!(app.db.get_article(id2.get()).unwrap().is_starred);
+                win(app).mode_group.set_active_name(Some(Mode::Full.name()));
+            }),
+            wait(move |app| {
+                app.db
+                    .get_article(id3.get())
+                    .and_then(|a| a.full_content)
+                    .is_some_and(|c| c.contains("Full story paragraph"))
+            }),
+            step(|app| {
+                let w = win(app);
+                w.mode_group.set_active_name(Some(Mode::Web.name()));
+                let site = w.site_view.borrow().clone().expect("WebView do modo Site");
+                assert!(WebViewExt::settings(&site).unwrap().enables_javascript());
+                assert!(site.web_context() != w.reader.web_context(), "contexto próprio e descartável");
+                assert!(!WebViewExt::settings(&w.reader).unwrap().enables_javascript());
+            }),
+            step(|app| {
+                win(app).mode_group.set_active_name(Some(Mode::Summary.name()));
+                assert!(win(app).site_view.borrow().is_none());
+            }),
+            step(move |app| {
+                *old.borrow_mut() = Some(win(app).window.clone());
+                let dialog = app.show_preferences().unwrap();
+                app.change_language("es", &dialog);
+            }),
+            pause(2),
+            step(move |app| {
+                assert!(Some(win(app).window.clone()) != *old_window.borrow(), "janela recriada");
+                assert_eq!(win(app).list_title.title(), "Todos los artículos");
+                assert_eq!(app.db.get_setting("language"), "es");
+                if let Some(dialog) = win(app).window.visible_dialog() {
+                    dialog.close();
+                }
+            }),
+            step(|app| {
+                act(app, "win.mark-all-read", None);
+                assert_eq!(app.db.counts().0, 0);
+            }),
+            step(|app| {
+                let w = win(app);
+                let inner = w.reader_pane.parent().and_then(|p| p.downcast::<gtk::Paned>().ok()).unwrap();
+                let outer = inner.parent().and_then(|p| p.downcast::<gtk::Paned>().ok()).unwrap();
+                for paned in [inner, outer] {
+                    let end_min = paned.end_child().unwrap().measure(gtk::Orientation::Horizontal, -1).0;
+                    assert!(end_min >= 400);
+                    assert!(paned.max_position() <= paned.width() - end_min, "leitor não pode ser espremido");
+                }
+                app.application.activate_action("about", None);
+            }),
+            step(|app| {
+                let dialog = win(app).window.visible_dialog().unwrap();
+                let about = dialog.downcast::<adw::AboutDialog>().unwrap();
+                assert_eq!(about.version(), env!("CARGO_PKG_VERSION"));
+                assert_eq!(about.release_notes_version(), env!("CARGO_PKG_VERSION"));
+                about.close();
+            }),
+            step(|app| app.application.activate_action("changelog", None)),
+            step(|app| {
+                let dialog = win(app).window.visible_dialog().unwrap();
+                assert_eq!(dialog.title(), "Registro de cambios");
                 dialog.close();
-            }
-        }),
-        step(|app| {
-            act(app, "win.mark-all-read", None);
-            assert_eq!(app.db.counts().0, 0);
-        }),
-        step(|app| {
-            let w = win(app);
-            let inner = w.reader_pane.parent().and_then(|p| p.downcast::<gtk::Paned>().ok()).unwrap();
-            let outer = inner.parent().and_then(|p| p.downcast::<gtk::Paned>().ok()).unwrap();
-            for paned in [inner, outer] {
-                let end_min = paned.end_child().unwrap().measure(gtk::Orientation::Horizontal, -1).0;
-                assert!(end_min >= 400);
-                assert!(paned.max_position() <= paned.width() - end_min, "leitor não pode ser espremido");
-            }
-            app.application.activate_action("about", None);
-        }),
-        step(|app| {
-            let dialog = win(app).window.visible_dialog().unwrap();
-            let about = dialog.downcast::<adw::AboutDialog>().unwrap();
-            assert_eq!(about.version(), env!("CARGO_PKG_VERSION"));
-            assert_eq!(about.release_notes_version(), env!("CARGO_PKG_VERSION"));
-            about.close();
-        }),
-        step(|app| app.application.activate_action("changelog", None)),
-        step(|app| {
-            let dialog = win(app).window.visible_dialog().unwrap();
-            assert_eq!(dialog.title(), "Registro de cambios");
-            dialog.close();
-        }),
-    ], &["readrss"]);
+            }),
+        ],
+        &["readrss"],
+    );
     readrss::i18n::set_language("system");
 }
 
 fn filter_and_edit() {
     let web = FakeWeb::start();
-    web.add("/feed", Response::new(200, "application/rss+xml",
-        rss(&(simple_item("1", "Paredão do BBB", "https://s.test/1") + &simple_item("2", "Ubuntu lançado", "https://s.test/2")),
-            "Test Site", &web.url("/"), "")));
-    web.add("/new-feed", Response::new(200, "application/rss+xml",
-        rss(&simple_item("3", "Outro", "https://s.test/3"), "Test Site", &web.url("/"), "")));
+    web.add(
+        "/feed",
+        Response::new(
+            200,
+            "application/rss+xml",
+            rss(
+                &(simple_item("1", "Paredão do BBB", "https://s.test/1")
+                    + &simple_item("2", "Ubuntu lançado", "https://s.test/2")),
+                "Test Site",
+                &web.url("/"),
+                "",
+            ),
+        ),
+    );
+    web.add(
+        "/new-feed",
+        Response::new(
+            200,
+            "application/rss+xml",
+            rss(&simple_item("3", "Outro", "https://s.test/3"), "Test Site", &web.url("/"), ""),
+        ),
+    );
     let dir = TempDir::new();
     let app = App::new(config(&dir));
     let feed_id = app.db.add_feed(&web.url("/feed"), "").unwrap();
@@ -204,66 +242,79 @@ fn filter_and_edit() {
     let paths = Rc::new(move || web.paths());
 
     let p = paths.clone();
-    run_steps(&app, vec![
-        wait(synced),
-        step(|app| win(app).select_source(Source::All)),
-        step(move |app| {
-            assert_eq!(titles(app), vec!["Paredão do BBB", "Ubuntu lançado"]);
-            act(app, "win.filter-feed", Some(&feed_id.to_variant()));
-        }),
-        step(|app| {
-            let dialog = win(app).filter_dialog.borrow().upgrade().expect("diálogo de filtro");
-            dialog.mode_row.set_selected(1);
-            dialog.text_view.buffer().set_text("bbb");
-        }),
-        pause(2),
-        step(|app| {
-            let dialog = win(app).filter_dialog.borrow().upgrade().unwrap();
-            let preview = dialog.preview_label.label();
-            assert!(preview.contains('1') && preview.contains('2'), "{preview}");
-            dialog.regex_row.set_active(true);
-            dialog.text_view.buffer().set_text("(bbb");
-        }),
-        pause(2),
-        step(|app| {
-            let dialog = win(app).filter_dialog.borrow().upgrade().unwrap();
-            assert!(dialog.error_label.is_visible() && !dialog.save_button.is_sensitive());
-            dialog.text_view.buffer().set_text("b{3}");
-        }),
-        pause(2),
-        step(|app| {
-            let dialog = win(app).filter_dialog.borrow().upgrade().unwrap();
-            assert!(dialog.save_button.is_sensitive());
-            dialog.save_button.emit_clicked();
-        }),
-        step(move |app| {
-            assert_eq!(titles(app), vec!["Ubuntu lançado"]);
-            assert_eq!(app.db.counts().0, 1);
-            let icons = win(app).sidebar_rows().into_iter().find(|(s, _, _)| *s == Some(Source::Feed(feed_id))).unwrap().2;
-            assert!(icons.contains(&FILTER_ICON.to_owned()));
-            act(app, "win.edit-feed", Some(&feed_id.to_variant()));
-        }),
-        step(move |app| {
-            let dialog = win(app).window.visible_dialog().unwrap();
-            assert!(dialog.is::<adw::AlertDialog>());
-            dialog.close();
-            app.edit_feed(&app.db.get_feed(feed_id).unwrap(), &new_url, "Meu Feed");
-        }),
-        wait(move |app| app.db.get_feed(feed_id).is_some_and(|f| f.url.ends_with("/new-feed")) && !app.sync.busy()),
-        pause(2),
-        step(move |app| {
-            assert_eq!(app.db.get_feed(feed_id).unwrap().display_title(), "Meu Feed");
-            assert!(p().contains(&"/new-feed".to_owned()));
-            assert!(titles(app).contains(&"Outro".to_owned()));
-        }),
-    ], &["readrss"]);
+    run_steps(
+        &app,
+        vec![
+            wait(synced),
+            step(|app| win(app).select_source(Source::All)),
+            step(move |app| {
+                assert_eq!(titles(app), vec!["Paredão do BBB", "Ubuntu lançado"]);
+                act(app, "win.filter-feed", Some(&feed_id.to_variant()));
+            }),
+            step(|app| {
+                let dialog = win(app).filter_dialog.borrow().upgrade().expect("diálogo de filtro");
+                dialog.mode_row.set_selected(1);
+                dialog.text_view.buffer().set_text("bbb");
+            }),
+            pause(2),
+            step(|app| {
+                let dialog = win(app).filter_dialog.borrow().upgrade().unwrap();
+                let preview = dialog.preview_label.label();
+                assert!(preview.contains('1') && preview.contains('2'), "{preview}");
+                dialog.regex_row.set_active(true);
+                dialog.text_view.buffer().set_text("(bbb");
+            }),
+            pause(2),
+            step(|app| {
+                let dialog = win(app).filter_dialog.borrow().upgrade().unwrap();
+                assert!(dialog.error_label.is_visible() && !dialog.save_button.is_sensitive());
+                dialog.text_view.buffer().set_text("b{3}");
+            }),
+            pause(2),
+            step(|app| {
+                let dialog = win(app).filter_dialog.borrow().upgrade().unwrap();
+                assert!(dialog.save_button.is_sensitive());
+                dialog.save_button.emit_clicked();
+            }),
+            step(move |app| {
+                assert_eq!(titles(app), vec!["Ubuntu lançado"]);
+                assert_eq!(app.db.counts().0, 1);
+                let icons =
+                    win(app).sidebar_rows().into_iter().find(|(s, _, _)| *s == Some(Source::Feed(feed_id))).unwrap().2;
+                assert!(icons.contains(&FILTER_ICON.to_owned()));
+                act(app, "win.edit-feed", Some(&feed_id.to_variant()));
+            }),
+            step(move |app| {
+                let dialog = win(app).window.visible_dialog().unwrap();
+                assert!(dialog.is::<adw::AlertDialog>());
+                dialog.close();
+                app.edit_feed(&app.db.get_feed(feed_id).unwrap(), &new_url, "Meu Feed");
+            }),
+            wait(move |app| app.db.get_feed(feed_id).is_some_and(|f| f.url.ends_with("/new-feed")) && !app.sync.busy()),
+            pause(2),
+            step(move |app| {
+                assert_eq!(app.db.get_feed(feed_id).unwrap().display_title(), "Meu Feed");
+                assert!(p().contains(&"/new-feed".to_owned()));
+                assert!(titles(app).contains(&"Outro".to_owned()));
+            }),
+        ],
+        &["readrss"],
+    );
 }
 
 fn webkit_processes_do_not_accumulate() {
     let web = FakeWeb::start();
     let items: String = (0..10)
-        .map(|i| item(&i.to_string(), &format!("Artigo {i}"), &format!("https://site{i}.example{i}.test/a/{i}"),
-                      r#"<p>texto</p><img src="img.png">"#, "", "Mon, 19 Oct 2026 10:00:00 GMT"))
+        .map(|i| {
+            item(
+                &i.to_string(),
+                &format!("Artigo {i}"),
+                &format!("https://site{i}.example{i}.test/a/{i}"),
+                r#"<p>texto</p><img src="img.png">"#,
+                "",
+                "Mon, 19 Oct 2026 10:00:00 GMT",
+            )
+        })
         .collect();
     web.add("/feed", Response::new(200, "application/rss+xml", rss(&items, "Many", &web.url("/"), "")));
     let dir = TempDir::new();
@@ -285,7 +336,9 @@ fn webkit_processes_do_not_accumulate() {
         if round == 10 {
             let b = baseline.clone();
             steps.push(pause(6));
-            steps.push(step(move |_| assert!(web_processes(me) <= b.get() + 2, "leitor: {} > {}", web_processes(me), b.get() + 2)));
+            steps.push(step(move |_| {
+                assert!(web_processes(me) <= b.get() + 2, "leitor: {} > {}", web_processes(me), b.get() + 2)
+            }));
             let m = web_mode.clone();
             steps.push(step(move |_| m.set(true)));
         }
@@ -312,28 +365,48 @@ fn webkit_processes_do_not_accumulate() {
 
 fn background_mode() {
     let web = FakeWeb::start();
-    web.add("/feed", Response::new(200, "application/rss+xml", rss(&simple_item("1", "First story", "https://s.test/1"), "T", &web.url("/"), "")));
+    web.add(
+        "/feed",
+        Response::new(
+            200,
+            "application/rss+xml",
+            rss(&simple_item("1", "First story", "https://s.test/1"), "T", &web.url("/"), ""),
+        ),
+    );
     let dir = TempDir::new();
     let app = App::new(config(&dir));
     app.db.add_feed(&web.url("/feed"), "");
-    run_steps(&app, vec![
-        wait(|app| !app.sync.busy() && app.db.counts().0 == 1),
-        step(|app| {
-            assert!(app.window().is_none() && app.application.windows().is_empty(), "serviço não abre janela");
-            app.application.activate();
-        }),
-        pause(2),
-        step(|app| {
-            assert!(win(app).window.is_visible());
-            assert_eq!(app.db.list_articles(&ArticleQuery::default())[0].title, "First story");
-        }),
-    ], &["readrss", "--background"]);
+    run_steps(
+        &app,
+        vec![
+            wait(|app| !app.sync.busy() && app.db.counts().0 == 1),
+            step(|app| {
+                assert!(app.window().is_none() && app.application.windows().is_empty(), "serviço não abre janela");
+                app.application.activate();
+            }),
+            pause(2),
+            step(|app| {
+                assert!(win(app).window.is_visible());
+                assert_eq!(app.db.list_articles(&ArticleQuery::default())[0].title, "First story");
+            }),
+        ],
+        &["readrss", "--background"],
+    );
 }
 
 fn name_owned(name: &str) -> bool {
     Command::new("gdbus")
-        .args(["call", "--session", "--dest", "org.freedesktop.DBus", "--object-path", "/org/freedesktop/DBus",
-               "--method", "org.freedesktop.DBus.NameHasOwner", name])
+        .args([
+            "call",
+            "--session",
+            "--dest",
+            "org.freedesktop.DBus",
+            "--object-path",
+            "/org/freedesktop/DBus",
+            "--method",
+            "org.freedesktop.DBus.NameHasOwner",
+            name,
+        ])
         .output()
         .is_ok_and(|o| String::from_utf8_lossy(&o.stdout).contains("true"))
 }

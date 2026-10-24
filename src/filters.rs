@@ -20,7 +20,7 @@ impl Mode {
     pub fn as_str(self) -> &'static str {
         match self {
             Mode::Hide => "hide",
-            Mode::Only => "only", 
+            Mode::Only => "only",
         }
     }
 

@@ -26,22 +26,8 @@ inteligência artificial para atender a algumas particularidades do autor.
 
 ## Instalação
 
-Dependências (Ubuntu/Debian):
-
-```sh
-sudo apt install rustc cargo libgtk-4-dev libadwaita-1-dev libwebkitgtk-6.0-dev libsqlite3-dev libssl-dev \
-                 gettext gstreamer1.0-plugins-bad
-```
-
-O `gstreamer1.0-plugins-bad` é usado pelo WebKit para vídeos (H.264, legendas WebVTT). Sem ele os vídeos
-das páginas podem não tocar e o terminal mostra avisos como `GStreamer element h264parse not found`.
-
-Instalar (ou atualizar) no sistema — compila em modo release e pede a senha do sudo apenas para copiar:
-
-```sh
-./scripts/install-desktop.sh              # instala/atualiza
-./scripts/install-desktop.sh --uninstall  # remove (seus feeds e artigos são mantidos)
-```
+Há duas formas: baixar o binário pronto ou compilar a partir do código-fonte. As duas instalam o
+mesmo layout e ativam o serviço de segundo plano:
 
 | Onde | O quê |
 |---|---|
@@ -49,6 +35,50 @@ Instalar (ou atualizar) no sistema — compila em modo release e pede a senha do
 | `/usr/local/bin/readrss` | atalho para rodar `readrss` no terminal |
 | `/usr/local/share/applications`, `/usr/local/share/icons` | lançador e ícones |
 | `/etc/systemd/user/readrss.service` | serviço **de usuário**, ativado para quem instalou |
+
+### Binário pronto (Ubuntu 26.04 ou equivalente, x86_64)
+
+O binário usa as bibliotecas do sistema e exige versões recentes (GTK 4.18+, libadwaita 1.7+,
+WebKitGTK 2.50+). Em distribuições mais antigas, compile a partir do código-fonte.
+
+```sh
+sudo apt install libgtk-4-1 libadwaita-1-0 libwebkitgtk-6.0-4 libsqlite3-0 gstreamer1.0-plugins-bad
+```
+
+Baixe `readrss-<versão>-linux-x86_64.tar.gz` e `SHA256SUMS` da página de Releases, verifique e instale:
+
+```sh
+sha256sum -c SHA256SUMS
+gh attestation verify readrss-<versão>-linux-x86_64.tar.gz --repo OWNER/readrss   # opcional
+tar xzf readrss-<versão>-linux-x86_64.tar.gz
+cd readrss-<versão>-linux-x86_64
+./install.sh                 # pede a senha do sudo apenas para copiar os arquivos
+```
+
+O `gh attestation verify` confirma que o arquivo foi compilado pelo GitHub Actions deste repositório
+a partir da tag da versão.
+
+### Compilando a partir do código-fonte
+
+```sh
+sudo apt install rustc cargo libgtk-4-dev libadwaita-1-dev libwebkitgtk-6.0-dev libsqlite3-dev libssl-dev \
+                 gettext gstreamer1.0-plugins-bad
+./scripts/install.sh         # compila em modo release e instala
+```
+
+### Desinstalar
+
+```sh
+./install.sh --uninstall           # a partir do pacote baixado
+./scripts/install.sh --uninstall   # a partir do código-fonte
+```
+
+Seus feeds e artigos continuam em `~/.local/share/readrss`.
+
+O `gstreamer1.0-plugins-bad` é usado pelo WebKit para vídeos (H.264, legendas WebVTT). Sem ele os vídeos
+das páginas podem não tocar e o terminal mostra avisos como `GStreamer element h264parse not found`.
+
+### Serviço em segundo plano
 
 O serviço sobe com a sessão gráfica (`graphical-session.target`) rodando `readrss --background`:
 sincroniza e notifica sem janela aberta. Abrir o readrss pelo menu (ou clicar numa notificação)
@@ -127,6 +157,20 @@ adicione o código em `po/LINGUAS` e em `LANGUAGES` (`src/i18n.rs`).
 2. Adicione um `Release` no topo de `RELEASES` em `src/changelog.rs` (entradas em inglês dentro de `N_()`).
 3. Rode `./scripts/update-translations.sh`, traduza as novas entradas em `po/*.po` e rode o script de novo.
 4. `cargo test` — há testes que falham se o changelog não tiver a versão nova ou se faltar tradução.
+5. Crie e envie a tag: `git tag v<versão> && git push origin v<versão>`.
+
+O workflow `release.yml` roda as mesmas checagens do CI, confere se a tag bate com o `Cargo.toml`,
+compila num contêiner Ubuntu 26.04, gera o `.tar.gz`, o `SHA256SUMS` e o atestado de procedência, e
+publica a release.
+
+## Integração contínua e segurança
+
+- `ci.yml` (push, pull request e semanalmente): `cargo deny` (vulnerabilidades da base RustSec,
+  licenças compatíveis com a GPL-3.0, duplicatas e origem das dependências), `cargo fmt`,
+  `cargo clippy -D warnings` e os testes de unidade e integração, num contêiner Ubuntu 26.04.
+- Ações do GitHub fixadas por hash de commit; o Dependabot atualiza ações e dependências.
+- HTTPS valida certificados pela lista de autoridades do sistema (atualizada pelo Ubuntu).
+- Relato de vulnerabilidades: veja [SECURITY.md](SECURITY.md).
 
 ## Ícone
 
@@ -136,7 +180,7 @@ adicione o código em `po/LINGUAS` e em `LANGUAGES` (`src/i18n.rs`).
 - `symbolic/apps/io.github.readrss.ReadRSS-symbolic.svg` — versão monocromática de 16px
 
 O app registra essa pasta no tema de ícones ao iniciar (funciona sem instalar); o
-`install-desktop.sh` copia os arquivos para `/usr/local/share/icons`. Para o snap, aponte
+`install.sh` copia os arquivos para `/usr/local/share/icons`. Para o snap, aponte
 `icon:` do `snapcraft.yaml` para o SVG principal e use `Icon=io.github.readrss.ReadRSS` no `.desktop`.
 
 ## Dados
@@ -168,7 +212,8 @@ tests/             net, sync, i18n, reader, icons e gui (testes de unidade ficam
 data/              locale/ (traduções compiladas) e icons/
 po/                catálogos de tradução (pt_BR, es)
 tools/             extract-strings: extrator de textos traduzíveis
-scripts/           install-desktop.sh, update-translations.sh
+scripts/           install.sh, package-release.sh, update-translations.sh, ci-install-deps.sh
+.github/           workflows de CI e release, Dependabot
 ```
 
 ## Licença

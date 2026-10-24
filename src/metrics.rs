@@ -40,10 +40,8 @@ pub fn web_processes(root: u32) -> usize {
 }
 
 pub fn process_age_ms() -> u128 {
-    let uptime: f64 = fs::read_to_string("/proc/uptime")
-        .ok()
-        .and_then(|s| s.split_whitespace().next()?.parse().ok())
-        .unwrap_or(0.0);
+    let uptime: f64 =
+        fs::read_to_string("/proc/uptime").ok().and_then(|s| s.split_whitespace().next()?.parse().ok()).unwrap_or(0.0);
     let started_ticks: f64 = fs::read_to_string("/proc/self/stat")
         .ok()
         .and_then(|s| s.rsplit_once(')')?.1.split_whitespace().nth(19)?.parse().ok())

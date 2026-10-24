@@ -9,7 +9,7 @@ use std::time::Duration;
 use gtk::gdk_pixbuf::{InterpType, Pixbuf, PixbufLoader};
 use gtk::glib;
 use gtk::prelude::*;
-use ureq::tls::{TlsConfig, TlsProvider};
+use ureq::tls::{RootCerts, TlsConfig, TlsProvider};
 use ureq::{Agent, ResponseExt};
 use url::Url;
 
@@ -98,7 +98,9 @@ impl Client {
             .timeout_global(Some(Duration::from_secs(20)))
             .timeout_connect(Some(Duration::from_secs(10)))
             .http_status_as_error(false)
-            .tls_config(TlsConfig::builder().provider(TlsProvider::NativeTls).build())
+            .tls_config(
+                TlsConfig::builder().provider(TlsProvider::NativeTls).root_certs(RootCerts::PlatformVerifier).build(),
+            )
             .build()
             .into();
         Client { agent }
@@ -115,11 +117,8 @@ impl Client {
         let content_type = header("content-type").unwrap_or_default();
         let (etag, modified) = (header("etag"), header("last-modified"));
         let final_url = response.get_uri().to_string();
-        let body = if status == 304 {
-            Vec::new()
-        } else {
-            response.body_mut().with_config().limit(MAX_BODY).read_to_vec()?
-        };
+        let body =
+            if status == 304 { Vec::new() } else { response.body_mut().with_config().limit(MAX_BODY).read_to_vec()? };
         Ok((status, Page { url: final_url, content_type, etag, modified, body }))
     }
 
@@ -155,11 +154,7 @@ fn parse_feed(body: &[u8]) -> Result<feed_rs::model::Feed, String> {
 /// Link principal (o "alternate"). Também é o GUID dos itens sem `<guid>`, a mesma regra
 /// usada pelos artigos já salvos no banco: mudá-la duplicaria artigos.
 fn preferred_link(links: &[feed_rs::model::Link]) -> Option<String> {
-    links
-        .iter()
-        .find(|l| l.rel.as_deref().is_none_or(|r| r == "alternate"))
-        .or(links.first())
-        .map(|l| l.href.clone())
+    links.iter().find(|l| l.rel.as_deref().is_none_or(|r| r == "alternate")).or(links.first()).map(|l| l.href.clone())
 }
 
 /// Aceita a URL de um feed ou de um site; no segundo caso procura o `<link rel=alternate>`.
@@ -174,16 +169,22 @@ pub fn discover_feed_url(client: &Client, url: &str) -> Result<String, NetError>
     for link in doc.select("link[rel][href]").nodes() {
         let rel = link.attr("rel").unwrap_or_default().to_lowercase();
         let kind = link.attr("type").unwrap_or_default().to_lowercase();
-        if rel.split_whitespace().any(|r| r == "alternate") && FEED_TYPES.contains(&kind.as_str()) {
-            if let Some(href) = link.attr("href").and_then(|h| base.join(h.trim()).ok()) {
-                return Ok(href.to_string());
-            }
+        if rel.split_whitespace().any(|r| r == "alternate")
+            && FEED_TYPES.contains(&kind.as_str())
+            && let Some(href) = link.attr("href").and_then(|h| base.join(h.trim()).ok())
+        {
+            return Ok(href.to_string());
         }
     }
     Err(NetError::NoFeedFound)
 }
 
-pub fn fetch_feed(client: &Client, url: &str, etag: Option<&str>, modified: Option<&str>) -> Result<FetchResult, NetError> {
+pub fn fetch_feed(
+    client: &Client,
+    url: &str,
+    etag: Option<&str>,
+    modified: Option<&str>,
+) -> Result<FetchResult, NetError> {
     let mut headers = Vec::new();
     if let Some(etag) = etag {
         headers.push(("If-None-Match", etag));
@@ -220,10 +221,10 @@ pub fn fetch_feed(client: &Client, url: &str, etag: Option<&str>, modified: Opti
 
 fn entry_to_article(entry: feed_rs::model::Entry, current: f64) -> NewArticle {
     let mut summary = entry.summary.map(|t| t.content).unwrap_or_default();
-    if let Some(body) = entry.content.and_then(|c| c.body) {
-        if body.len() > summary.len() {
-            summary = body;
-        }
+    if let Some(body) = entry.content.and_then(|c| c.body)
+        && body.len() > summary.len()
+    {
+        summary = body;
     }
     let published = entry.published.or(entry.updated).map(|d| d.timestamp() as f64).unwrap_or(current).min(current);
     NewArticle {
@@ -245,8 +246,13 @@ pub fn icon_needs_refresh(icon_path: Option<&str>, icon_checked: f64) -> bool {
 ///
 /// Normalizar para PNG aqui é o que evita ícones quebrados na interface: ICO com várias
 /// resoluções, SVG e páginas HTML servidas com status 200 são descartados no download.
-pub fn resolve_icon(client: &Client, feed_url: &str, site_url: &str, feed_icon_urls: &[String], cache_dir: &Path)
-    -> Option<String> {
+pub fn resolve_icon(
+    client: &Client,
+    feed_url: &str,
+    site_url: &str,
+    feed_icon_urls: &[String],
+    cache_dir: &Path,
+) -> Option<String> {
     let base = if site_url.is_empty() {
         let parsed = Url::parse(feed_url).ok()?;
         format!("{}://{}", parsed.scheme(), parsed.host_str()?)
@@ -328,8 +334,8 @@ fn download_icon(client: &Client, url: &str) -> Option<Pixbuf> {
 
 pub fn extract_article(client: &Client, url: &str) -> Result<String, NetError> {
     let page = client.get_ok(url)?;
-    let mut readability =
-        dom_smoothie::Readability::new(page.text(), Some(page.url.as_str()), None).map_err(|_| NetError::ExtractFailed)?;
+    let mut readability = dom_smoothie::Readability::new(page.text(), Some(page.url.as_str()), None)
+        .map_err(|_| NetError::ExtractFailed)?;
     let article = readability.parse().map_err(|_| NetError::ExtractFailed)?;
     let content = clean_extracted(&article.content);
     if crate::filters::html_to_text(&content).trim().is_empty() {

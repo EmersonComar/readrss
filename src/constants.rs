@@ -16,9 +16,7 @@ fn resource(name: &str, env: &str) -> PathBuf {
     if let Some(dir) = std::env::var_os(env) {
         return PathBuf::from(dir);
     }
-    installed_share()
-        .map(|share| share.join(name))
-        .unwrap_or_else(|| PathBuf::from(DEV_SHARE).join(name))
+    installed_share().map(|share| share.join(name)).unwrap_or_else(|| PathBuf::from(DEV_SHARE).join(name))
 }
 
 /// Catálogos de tradução: instalado em `<prefixo>/share/readrss/locale`, no repositório

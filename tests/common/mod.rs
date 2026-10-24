@@ -73,7 +73,8 @@ impl FakeWeb {
                     let request = Request { path: path.clone(), headers };
                     q.lock().unwrap().push(request.clone());
                     let handler = r.lock().unwrap().get(&path).cloned();
-                    let response = handler.map(|h| h(&request)).unwrap_or_else(|| Response::new(404, "text/plain", "not found"));
+                    let response =
+                        handler.map(|h| h(&request)).unwrap_or_else(|| Response::new(404, "text/plain", "not found"));
                     let mut out = stream;
                     let mut head = format!(
                         "HTTP/1.1 {} X\r\ncontent-type: {}\r\ncontent-length: {}\r\nconnection: close\r\n",
@@ -143,7 +144,9 @@ pub fn item(guid: &str, title: &str, link: &str, summary: &str, content: &str, d
         format!("<content:encoded><![CDATA[{content}]]></content:encoded>")
     };
     let date_xml = if date.is_empty() { String::new() } else { format!("<pubDate>{date}</pubDate>") };
-    format!("<item><title>{title}</title><link>{link}</link>{guid_xml}<description><![CDATA[{summary}]]></description>{content_xml}{date_xml}</item>")
+    format!(
+        "<item><title>{title}</title><link>{link}</link>{guid_xml}<description><![CDATA[{summary}]]></description>{content_xml}{date_xml}</item>"
+    )
 }
 
 pub fn simple_item(guid: &str, title: &str, link: &str) -> String {

@@ -55,16 +55,17 @@ impl SyncService {
     }
 
     /// Dispara a sincronização; `false` se já houver uma em andamento.
-    pub fn sync(self: &Rc<Self>, db: &Rc<Db>, feed_ids: Option<Vec<i64>>, on_done: impl FnOnce(SyncReport) + 'static)
-        -> bool {
+    pub fn sync(
+        self: &Rc<Self>,
+        db: &Rc<Db>,
+        feed_ids: Option<Vec<i64>>,
+        on_done: impl FnOnce(SyncReport) + 'static,
+    ) -> bool {
         if self.running.replace(true) {
             return false;
         }
-        let feeds: Vec<Feed> = db
-            .list_feeds()
-            .into_iter()
-            .filter(|f| feed_ids.as_ref().is_none_or(|ids| ids.contains(&f.id)))
-            .collect();
+        let feeds: Vec<Feed> =
+            db.list_feeds().into_iter().filter(|f| feed_ids.as_ref().is_none_or(|ids| ids.contains(&f.id))).collect();
         let jobs: Vec<Job> = feeds
             .iter()
             .map(|f| Job {
@@ -131,8 +132,14 @@ fn apply(db: &Db, feeds: &[Feed], outcomes: Vec<Option<Outcome>>) -> SyncReport 
                 0
             }
             Ok(mut result) => {
-                db.update_feed_meta(feed.id, &result.title, &result.site_url, result.etag.as_deref(),
-                                    result.modified.as_deref(), None);
+                db.update_feed_meta(
+                    feed.id,
+                    &result.title,
+                    &result.site_url,
+                    result.etag.as_deref(),
+                    result.modified.as_deref(),
+                    None,
+                );
                 let untitled = gettext("(untitled)");
                 for article in &mut result.articles {
                     if article.title.is_empty() {

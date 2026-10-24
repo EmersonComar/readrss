@@ -8,6 +8,7 @@ use std::rc::Rc;
 use adw::prelude::*;
 use gtk::{gdk, gio, glib};
 
+use crate::about;
 use crate::constants::{APP_ID, icons_dir};
 use crate::db::{Db, Feed};
 use crate::i18n::{self, fill, gettext, ngettext, ngettext_n};
@@ -15,9 +16,10 @@ use crate::net;
 use crate::opml;
 use crate::sync::{SyncReport, SyncService};
 use crate::window::{Source, Window};
-use crate::about;
 
 pub const SYNC_INTERVALS: [u32; 3] = [5, 30, 60];
+
+type AppAction = (&'static str, fn(&Rc<App>), &'static [&'static str]);
 
 #[derive(Clone, Debug)]
 pub struct Config {
@@ -51,7 +53,7 @@ pub struct App {
 }
 
 fn interval_label(minutes: u32) -> String {
-    if minutes % 60 == 0 {
+    if minutes.is_multiple_of(60) {
         ngettext_n("{n} hour", "{n} hours", (minutes / 60) as usize)
     } else {
         ngettext_n("{n} minute", "{n} minutes", minutes as usize)
@@ -136,24 +138,36 @@ impl App {
             });
         }
 
-        let actions: [(&str, fn(&Rc<App>), &[&str]); 9] = [
+        let actions: [AppAction; 9] = [
             ("add-feed", |a| a.show_add_feed(), &["<Control>n"]),
             ("sync", |a| a.start_sync(true, None), &["<Control>r", "F5"]),
             ("import-opml", |a| a.import_opml(), &[]),
             ("export-opml", |a| a.export_opml(), &[]),
-            ("preferences", |a| {
-                a.show_preferences();
-            }, &["<Control>comma"]),
-            ("changelog", |a| {
-                if let Some(w) = a.window() {
-                    about::show_changelog(&w.window);
-                }
-            }, &[]),
-            ("about", |a| {
-                if let Some(w) = a.window() {
-                    about::show_about(&w.window);
-                }
-            }, &[]),
+            (
+                "preferences",
+                |a| {
+                    a.show_preferences();
+                },
+                &["<Control>comma"],
+            ),
+            (
+                "changelog",
+                |a| {
+                    if let Some(w) = a.window() {
+                        about::show_changelog(&w.window);
+                    }
+                },
+                &[],
+            ),
+            (
+                "about",
+                |a| {
+                    if let Some(w) = a.window() {
+                        about::show_about(&w.window);
+                    }
+                },
+                &[],
+            ),
             ("show-window", |a| a.application.activate(), &[]),
             ("quit", |a| a.application.quit(), &["<Control>q"]),
         ];
@@ -246,8 +260,11 @@ impl App {
         if manual && !report.errors.is_empty() {
             let n = report.errors.len();
             window.toast(&fill(
-                &ngettext("{n} feed failed (hover the warning icon for details)",
-                          "{n} feeds failed (hover the warning icons for details)", n as u32),
+                &ngettext(
+                    "{n} feed failed (hover the warning icon for details)",
+                    "{n} feeds failed (hover the warning icons for details)",
+                    n as u32,
+                ),
                 &[("n", &n)],
             ));
         }
@@ -306,7 +323,7 @@ impl App {
         glib::spawn_future_local(async move {
             let result = gio::spawn_blocking(move || net::discover_feed_url(&net::Client::new(), &url))
                 .await
-                .unwrap_or_else(|_| Err(net::NetError::NoFeedFound));
+                .unwrap_or(Err(net::NetError::NoFeedFound));
             match result {
                 Ok(feed_url) => match app.db.add_feed(&feed_url, "") {
                     Some(feed_id) => {
@@ -336,7 +353,7 @@ impl App {
         glib::spawn_future_local(async move {
             let result = gio::spawn_blocking(move || net::discover_feed_url(&net::Client::new(), &url))
                 .await
-                .unwrap_or_else(|_| Err(net::NetError::NoFeedFound));
+                .unwrap_or(Err(net::NetError::NoFeedFound));
             match result {
                 Ok(feed_url) => {
                     if feed_url != old_url && app.db.update_feed_url(feed_id, &feed_url).is_err() {
@@ -369,7 +386,8 @@ impl App {
         let filter = opml_filter();
         let filters = gio::ListStore::new::<gtk::FileFilter>();
         filters.append(&filter);
-        let dialog = gtk::FileDialog::builder().title(gettext("Import OPML")).default_filter(&filter).filters(&filters).build();
+        let dialog =
+            gtk::FileDialog::builder().title(gettext("Import OPML")).default_filter(&filter).filters(&filters).build();
         let app = self.clone();
         dialog.open(Some(&window.window), gio::Cancellable::NONE, move |result| {
             let Some(path) = result.ok().and_then(|file| file.path()) else { return };
@@ -384,8 +402,11 @@ impl App {
             if let Some(window) = app.window() {
                 window.reload_sidebar();
             }
-            let text = ngettext("{n} feed imported ({skipped} already existed)",
-                                "{n} feeds imported ({skipped} already existed)", added.len() as u32);
+            let text = ngettext(
+                "{n} feed imported ({skipped} already existed)",
+                "{n} feeds imported ({skipped} already existed)",
+                added.len() as u32,
+            );
             app.toast(&fill(&text, &[("n", &added.len()), ("skipped", &(entries.len() - added.len()))]));
             if !added.is_empty() {
                 app.start_sync(false, Some(added));
@@ -417,7 +438,8 @@ impl App {
         let system_default = gettext("System default");
         let labels: Vec<&str> =
             std::iter::once(system_default.as_str()).chain(i18n::LANGUAGES.iter().map(|(_, l)| *l)).collect();
-        let language = adw::ComboRow::builder().title(gettext("Language")).model(&gtk::StringList::new(&labels)).build();
+        let language =
+            adw::ComboRow::builder().title(gettext("Language")).model(&gtk::StringList::new(&labels)).build();
         let current = self.db.get_setting("language");
         language.set_selected(codes.iter().position(|c| *c == current).unwrap_or(0) as u32);
         let app = self.clone();
@@ -447,10 +469,18 @@ impl App {
             app.reschedule_sync();
         });
         group.add(&interval);
-        group.add(&self.switch_row("notifications", &gettext("Notifications"),
-                                   &gettext("Notify about new articles when the window is not focused"), false));
-        group.add(&self.switch_row("run_in_background", &gettext("Run in background"),
-                                   &gettext("Keep syncing after the window is closed (use “Quit” to exit)"), true));
+        group.add(&self.switch_row(
+            "notifications",
+            &gettext("Notifications"),
+            &gettext("Notify about new articles when the window is not focused"),
+            false,
+        ));
+        group.add(&self.switch_row(
+            "run_in_background",
+            &gettext("Run in background"),
+            &gettext("Keep syncing after the window is closed (use “Quit” to exit)"),
+            true,
+        ));
         page.add(&group);
 
         dialog.add(&page);
@@ -459,7 +489,8 @@ impl App {
     }
 
     fn switch_row(self: &Rc<Self>, key: &'static str, title: &str, subtitle: &str, background: bool) -> adw::SwitchRow {
-        let row = adw::SwitchRow::builder().title(title).subtitle(subtitle).active(self.db.get_setting(key) == "1").build();
+        let row =
+            adw::SwitchRow::builder().title(title).subtitle(subtitle).active(self.db.get_setting(key) == "1").build();
         let app = self.clone();
         row.connect_active_notify(move |row| {
             app.db.set_setting(key, if row.is_active() { "1" } else { "0" });
@@ -496,4 +527,3 @@ fn opml_filter() -> gtk::FileFilter {
     filter.add_pattern("*.xml");
     filter
 }
-

@@ -20,37 +20,53 @@ pub struct Section {
     pub items: Vec<String>,
 }
 
-pub const RELEASES: &[Release] = &[Release {
-    version: "0.1.0",
-    date: (2026, 10, 20),
-    added: &[
-        N_("Subscribe to RSS/Atom feeds by entering the feed or website address; the feed is detected automatically."),
-        N_(
-            "Three reading modes: feed summary, full article extracted from the website, and the original page inside the app.",
-        ),
-        N_("Reliable website icons, validated and cached, with an initials avatar when no icon is available."),
-        N_("Automatic sync every 5 minutes, 30 minutes or 1 hour, downloading only feeds that changed."),
-        N_("Notifications for new articles and an option to keep syncing in the background."),
-        N_("Unread and starred articles, search, and mark all as read."),
-        N_("OPML import and export to migrate from other feed readers."),
-        N_("Interface in Portuguese, English and Spanish, switchable without restarting."),
-        N_("Keyboard shortcuts to navigate and read articles."),
-        N_("About dialog and changelog in the main menu."),
-        N_("Application icon, also used by the launcher."),
-        N_(
-            "System installation in /opt with a background service that starts with the session and keeps syncing and notifying without the window open.",
-        ),
-        N_("Edit a feed's address and name from its context menu."),
-        N_("Per-feed filters by keywords or regular expressions, to hide matching articles or show only them."),
-    ],
-    changed: &[],
-    fixed: &[
-        N_("Window buttons no longer disappear when the reader pane is made narrow."),
-        N_("No more graphics warnings when maximizing or resizing the window."),
-        N_("Notifications for a newly added feed show its name instead of its address."),
-        N_("Reading articles from many websites no longer piles up browser processes and memory."),
-    ],
-}];
+pub const RELEASES: &[Release] = &[
+    Release {
+        version: "0.1.1",
+        date: (2026, 10, 24),
+        added: &[
+            N_("Installation and automatic updates through the readrss APT repository."),
+            N_("Debian package with a manual page and the background service enabled for every user."),
+        ],
+        changed: &[N_(
+            "The installer in the release archive now uses the same launcher and service files as the package.",
+        )],
+        fixed: &[],
+    },
+    Release {
+        version: "0.1.0",
+        date: (2026, 10, 20),
+        added: &[
+            N_(
+                "Subscribe to RSS/Atom feeds by entering the feed or website address; the feed is detected automatically.",
+            ),
+            N_(
+                "Three reading modes: feed summary, full article extracted from the website, and the original page inside the app.",
+            ),
+            N_("Reliable website icons, validated and cached, with an initials avatar when no icon is available."),
+            N_("Automatic sync every 5 minutes, 30 minutes or 1 hour, downloading only feeds that changed."),
+            N_("Notifications for new articles and an option to keep syncing in the background."),
+            N_("Unread and starred articles, search, and mark all as read."),
+            N_("OPML import and export to migrate from other feed readers."),
+            N_("Interface in Portuguese, English and Spanish, switchable without restarting."),
+            N_("Keyboard shortcuts to navigate and read articles."),
+            N_("About dialog and changelog in the main menu."),
+            N_("Application icon, also used by the launcher."),
+            N_(
+                "System installation in /opt with a background service that starts with the session and keeps syncing and notifying without the window open.",
+            ),
+            N_("Edit a feed's address and name from its context menu."),
+            N_("Per-feed filters by keywords or regular expressions, to hide matching articles or show only them."),
+        ],
+        changed: &[],
+        fixed: &[
+            N_("Window buttons no longer disappear when the reader pane is made narrow."),
+            N_("No more graphics warnings when maximizing or resizing the window."),
+            N_("Notifications for a newly added feed show its name instead of its address."),
+            N_("Reading articles from many websites no longer piles up browser processes and memory."),
+        ],
+    },
+];
 
 /// Seções não vazias da versão, já traduzidas.
 pub fn sections(release: &Release) -> Vec<Section> {

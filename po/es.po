@@ -29,37 +29,37 @@ msgstr ""
 "Desarrollado con ayuda de inteligencia artificial para atender algunas "
 "necesidades particulares del autor."
 
-#: src/about.rs:61
+#: src/about.rs:63
 msgid "Version {version}"
 msgstr "Versión {version}"
 
-#: src/about.rs:62
+#: src/about.rs:64
 msgid "%m/%d/%Y"
 msgstr "%d/%m/%Y"
 
-#: src/about.rs:78 src/window.rs:268
+#: src/about.rs:80 src/window.rs:270
 msgid "Changelog"
 msgstr "Registro de cambios"
 
-#: src/app.rs:55
+#: src/app.rs:57
 msgid "{n} hour"
 msgid_plural "{n} hours"
 msgstr[0] "{n} hora"
 msgstr[1] "{n} horas"
 
-#: src/app.rs:57
+#: src/app.rs:59
 msgid "{n} minute"
 msgid_plural "{n} minutes"
 msgstr[0] "{n} minuto"
 msgstr[1] "{n} minutos"
 
-#: src/app.rs:62
+#: src/app.rs:64
 msgid "{n} new article"
 msgid_plural "{n} new articles"
 msgstr[0] "{n} artículo nuevo"
 msgstr[1] "{n} artículos nuevos"
 
-#: src/app.rs:75
+#: src/app.rs:77
 msgid ""
 "Start in the background without opening the window (used by the systemd "
 "service)"
@@ -67,141 +67,163 @@ msgstr ""
 "Iniciar en segundo plano sin abrir la ventana (usado por el servicio de "
 "systemd)"
 
-#: src/app.rs:223
+#: src/app.rs:237
 msgid "A sync is already in progress"
 msgstr "Ya hay una sincronización en curso"
 
-#: src/app.rs:244
+#: src/app.rs:258
 msgid "No new articles"
 msgstr "No hay artículos nuevos"
 
-#: src/app.rs:249
+#: src/app.rs:263
 msgid "{n} feed failed (hover the warning icon for details)"
 msgid_plural "{n} feeds failed (hover the warning icons for details)"
 msgstr[0] "{n} feed con error (pasa el ratón sobre el icono de alerta)"
 msgstr[1] "{n} feeds con error (pasa el ratón sobre los iconos de alerta)"
 
-#: src/app.rs:261
+#: src/app.rs:278
 msgid " and {n} more"
 msgstr " y {n} más"
 
-#: src/app.rs:278
+#: src/app.rs:295
 msgid "https://site.com or https://site.com/feed"
 msgstr "https://sitio.com o https://sitio.com/feed"
 
-#: src/app.rs:282
+#: src/app.rs:299
 msgid "Add feed"
 msgstr "Añadir feed"
 
-#: src/app.rs:283
+#: src/app.rs:300
 msgid ""
 "Enter the URL of the feed or the website; the feed is detected automatically."
 msgstr ""
 "Introduce la URL del feed o del sitio web; el feed se detecta "
 "automáticamente."
 
-#: src/app.rs:288 src/feed_dialogs.rs:39 src/feed_dialogs.rs:125
-#: src/window.rs:783
+#: src/app.rs:305 src/feed_dialogs.rs:42 src/feed_dialogs.rs:133
+#: src/window.rs:833
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/app.rs:289
+#: src/app.rs:306
 msgid "Add"
 msgstr "Añadir"
 
-#: src/app.rs:304
+#: src/app.rs:321
 msgid "Looking for the feed…"
 msgstr "Buscando el feed…"
 
-#: src/app.rs:318
+#: src/app.rs:335
 msgid "This feed is already subscribed"
 msgstr "Ya estás suscrito a este feed"
 
-#: src/app.rs:321
+#: src/app.rs:338
 msgid "Could not add the feed: {error}"
 msgstr "No se pudo añadir el feed: {error}"
 
-#: src/app.rs:334
+#: src/app.rs:351
 msgid "Checking the new address…"
 msgstr "Comprobando la nueva dirección…"
 
-#: src/app.rs:343
+#: src/app.rs:360
 msgid "This address already belongs to another feed"
 msgstr "Esta dirección ya pertenece a otro feed"
 
-#: src/app.rs:351
+#: src/app.rs:368
 msgid "The address was not changed: {error}"
 msgstr "La dirección no se cambió: {error}"
 
-#: src/app.rs:363
+#: src/app.rs:380
 msgid "Feed updated"
 msgstr "Feed actualizado"
 
-#: src/app.rs:372
+#: src/app.rs:390
 msgid "Import OPML"
 msgstr "Importar OPML"
 
-#: src/app.rs:379
+#: src/app.rs:397
 msgid "Invalid OPML: {error}"
 msgstr "OPML no válido: {error}"
 
-#: src/app.rs:387
+#: src/app.rs:405
 msgid "{n} feed imported ({skipped} already existed)"
 msgid_plural "{n} feeds imported ({skipped} already existed)"
 msgstr[0] "{n} feed importado ({skipped} ya existían)"
 msgstr[1] "{n} feeds importados ({skipped} ya existían)"
 
-#: src/app.rs:398
+#: src/app.rs:419
 msgid "Export OPML"
 msgstr "Exportar OPML"
 
-#: src/app.rs:404
+#: src/app.rs:425
 msgid "{n} feed exported"
 msgid_plural "{n} feeds exported"
 msgstr[0] "{n} feed exportado"
 msgstr[1] "{n} feeds exportados"
 
-#: src/app.rs:413 src/window.rs:267
+#: src/app.rs:434 src/window.rs:269
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: src/app.rs:415
+#: src/app.rs:436
 msgid "General"
 msgstr "General"
 
-#: src/app.rs:417
+#: src/app.rs:438
 msgid "System default"
 msgstr "Predeterminado del sistema"
 
-#: src/app.rs:420
+#: src/app.rs:442
 msgid "Language"
 msgstr "Idioma"
 
-#: src/app.rs:434
+#: src/app.rs:456
 msgid "Sync"
 msgstr "Sincronización"
 
-#: src/app.rs:438
+#: src/app.rs:460
 msgid "Update interval"
 msgstr "Intervalo de actualización"
 
-#: src/app.rs:450
+#: src/app.rs:474
 msgid "Notifications"
 msgstr "Notificaciones"
 
-#: src/app.rs:451
+#: src/app.rs:475
 msgid "Notify about new articles when the window is not focused"
 msgstr "Avisar de artículos nuevos cuando la ventana no esté enfocada"
 
-#: src/app.rs:452
+#: src/app.rs:480
 msgid "Run in background"
 msgstr "Seguir en segundo plano"
 
-#: src/app.rs:453
+#: src/app.rs:481
 msgid "Keep syncing after the window is closed (use “Quit” to exit)"
 msgstr "Seguir sincronizando al cerrar la ventana (usa “Salir” para terminar)"
 
-#: src/changelog.rs:27
+#: src/changelog.rs:28
+msgid "Installation and automatic updates through the readrss APT repository."
+msgstr ""
+"Instalación y actualizaciones automáticas desde el repositorio APT de "
+"readrss."
+
+#: src/changelog.rs:29
+msgid ""
+"Debian package with a manual page and the background service enabled for "
+"every user."
+msgstr ""
+"Paquete Debian con página de manual y el servicio en segundo plano activado "
+"para todos los usuarios."
+
+#: src/changelog.rs:31
+msgid ""
+"The installer in the release archive now uses the same launcher and service "
+"files as the package."
+msgstr ""
+"El instalador del archivo de la versión ahora usa los mismos archivos de "
+"lanzador y de servicio que el paquete."
+
+#: src/changelog.rs:40
 msgid ""
 "Subscribe to RSS/Atom feeds by entering the feed or website address; the "
 "feed is detected automatically."
@@ -209,7 +231,7 @@ msgstr ""
 "Suscripción a feeds RSS/Atom introduciendo la dirección del feed o del sitio "
 "web; el feed se detecta automáticamente."
 
-#: src/changelog.rs:28
+#: src/changelog.rs:43
 msgid ""
 "Three reading modes: feed summary, full article extracted from the website, "
 "and the original page inside the app."
@@ -217,7 +239,7 @@ msgstr ""
 "Tres modos de lectura: resumen del feed, artículo completo extraído del "
 "sitio web y la página original dentro de la aplicación."
 
-#: src/changelog.rs:29
+#: src/changelog.rs:46
 msgid ""
 "Reliable website icons, validated and cached, with an initials avatar when "
 "no icon is available."
@@ -225,7 +247,7 @@ msgstr ""
 "Iconos de sitios fiables, validados y en caché, con un avatar de iniciales "
 "cuando no hay icono disponible."
 
-#: src/changelog.rs:30
+#: src/changelog.rs:47
 msgid ""
 "Automatic sync every 5 minutes, 30 minutes or 1 hour, downloading only feeds "
 "that changed."
@@ -233,7 +255,7 @@ msgstr ""
 "Sincronización automática cada 5 minutos, 30 minutos o 1 hora, descargando "
 "solo los feeds que cambiaron."
 
-#: src/changelog.rs:31
+#: src/changelog.rs:48
 msgid ""
 "Notifications for new articles and an option to keep syncing in the "
 "background."
@@ -241,33 +263,33 @@ msgstr ""
 "Notificaciones de artículos nuevos y opción de seguir sincronizando en "
 "segundo plano."
 
-#: src/changelog.rs:32
+#: src/changelog.rs:49
 msgid "Unread and starred articles, search, and mark all as read."
 msgstr "Artículos no leídos y destacados, búsqueda y marcar todos como leídos."
 
-#: src/changelog.rs:33
+#: src/changelog.rs:50
 msgid "OPML import and export to migrate from other feed readers."
 msgstr ""
 "Importación y exportación de OPML para migrar desde otros lectores de feeds."
 
-#: src/changelog.rs:34
+#: src/changelog.rs:51
 msgid ""
 "Interface in Portuguese, English and Spanish, switchable without restarting."
 msgstr "Interfaz en portugués, inglés y español, intercambiable sin reiniciar."
 
-#: src/changelog.rs:35
+#: src/changelog.rs:52
 msgid "Keyboard shortcuts to navigate and read articles."
 msgstr "Atajos de teclado para navegar y leer artículos."
 
-#: src/changelog.rs:36
+#: src/changelog.rs:53
 msgid "About dialog and changelog in the main menu."
 msgstr "Ventana “Acerca de” y registro de cambios en el menú principal."
 
-#: src/changelog.rs:37
+#: src/changelog.rs:54
 msgid "Application icon, also used by the launcher."
 msgstr "Icono de la aplicación, usado también por el lanzador."
 
-#: src/changelog.rs:38
+#: src/changelog.rs:55
 msgid ""
 "System installation in /opt with a background service that starts with the "
 "session and keeps syncing and notifying without the window open."
@@ -276,12 +298,12 @@ msgstr ""
 "inicia con la sesión y sigue sincronizando y notificando sin la ventana "
 "abierta."
 
-#: src/changelog.rs:39
+#: src/changelog.rs:58
 msgid "Edit a feed's address and name from its context menu."
 msgstr ""
 "Edición de la dirección y el nombre de un feed desde su menú contextual."
 
-#: src/changelog.rs:40
+#: src/changelog.rs:59
 msgid ""
 "Per-feed filters by keywords or regular expressions, to hide matching "
 "articles or show only them."
@@ -289,23 +311,23 @@ msgstr ""
 "Filtros por feed con palabras clave o expresiones regulares, para ocultar "
 "las noticias que coinciden o mostrar solo esas."
 
-#: src/changelog.rs:44
+#: src/changelog.rs:63
 msgid "Window buttons no longer disappear when the reader pane is made narrow."
 msgstr ""
 "Los botones de la ventana ya no desaparecen al estrechar el panel de lectura."
 
-#: src/changelog.rs:45
+#: src/changelog.rs:64
 msgid "No more graphics warnings when maximizing or resizing the window."
 msgstr "Sin más avisos gráficos al maximizar o redimensionar la ventana."
 
-#: src/changelog.rs:46
+#: src/changelog.rs:65
 msgid ""
 "Notifications for a newly added feed show its name instead of its address."
 msgstr ""
 "Las notificaciones de un feed recién añadido muestran su nombre en lugar de "
 "su dirección."
 
-#: src/changelog.rs:47
+#: src/changelog.rs:66
 msgid ""
 "Reading articles from many websites no longer piles up browser processes and "
 "memory."
@@ -313,68 +335,68 @@ msgstr ""
 "Leer noticias de muchos sitios ya no acumula procesos del navegador ni "
 "memoria."
 
-#: src/changelog.rs:54
+#: src/changelog.rs:74
 msgid "Added"
 msgstr "Añadido"
 
-#: src/changelog.rs:55
+#: src/changelog.rs:75
 msgid "Changed"
 msgstr "Cambiado"
 
-#: src/changelog.rs:56
+#: src/changelog.rs:76
 msgid "Fixed"
 msgstr "Corregido"
 
-#: src/feed_dialogs.rs:20
+#: src/feed_dialogs.rs:23
 msgid "Feed or website address"
 msgstr "Dirección del feed o del sitio web"
 
-#: src/feed_dialogs.rs:22
+#: src/feed_dialogs.rs:25
 msgid "Name"
 msgstr "Nombre"
 
-#: src/feed_dialogs.rs:27
+#: src/feed_dialogs.rs:29
 msgid "Leave the name empty to use the title provided by the feed: {title}"
 msgstr ""
 "Deja el nombre vacío para usar el título que proporciona el feed: {title}"
 
-#: src/feed_dialogs.rs:34
+#: src/feed_dialogs.rs:37
 msgid "Edit feed"
 msgstr "Editar feed"
 
-#: src/feed_dialogs.rs:40 src/feed_dialogs.rs:126
+#: src/feed_dialogs.rs:43 src/feed_dialogs.rs:134
 msgid "Save"
 msgstr "Guardar"
 
-#: src/feed_dialogs.rs:76
+#: src/feed_dialogs.rs:83
 msgid "Mode"
 msgstr "Modo"
 
-#: src/feed_dialogs.rs:79
+#: src/feed_dialogs.rs:86
 msgid "Off"
 msgstr "Desactivado"
 
-#: src/feed_dialogs.rs:80
+#: src/feed_dialogs.rs:87
 msgid "Hide articles that match"
 msgstr "Ocultar noticias que coinciden"
 
-#: src/feed_dialogs.rs:81
+#: src/feed_dialogs.rs:88
 msgid "Show only articles that match"
 msgstr "Mostrar solo noticias que coinciden"
 
-#: src/feed_dialogs.rs:86
+#: src/feed_dialogs.rs:93
 msgid "Use regular expressions"
 msgstr "Usar expresiones regulares"
 
-#: src/feed_dialogs.rs:87
+#: src/feed_dialogs.rs:94
 msgid "Each line is a regular expression"
 msgstr "Cada línea es una expresión regular"
 
-#: src/feed_dialogs.rs:113
+#: src/feed_dialogs.rs:121
 msgid "Keywords"
 msgstr "Palabras clave"
 
-#: src/feed_dialogs.rs:114
+#: src/feed_dialogs.rs:122
 msgid ""
 "One per line. Searched in the title and summary, ignoring case and accents. "
 "Plain words match whole words only."
@@ -383,33 +405,33 @@ msgstr ""
 "mayúsculas ni acentos. Las palabras simples solo coinciden con la palabra "
 "completa."
 
-#: src/feed_dialogs.rs:134
+#: src/feed_dialogs.rs:142
 msgid "Filter “{title}”"
 msgstr "Filtrar “{title}”"
 
-#: src/feed_dialogs.rs:223
+#: src/feed_dialogs.rs:231
 msgid "No filter: all articles of this feed are shown."
 msgstr "Sin filtro: se muestran todas las noticias de este feed."
 
-#: src/feed_dialogs.rs:228
+#: src/feed_dialogs.rs:236
 msgid "{hidden} of {total} current articles would be hidden."
 msgid_plural "{hidden} of {total} current articles would be hidden."
 msgstr[0] "{hidden} de {total} noticias actuales se ocultaría."
 msgstr[1] "{hidden} de {total} noticias actuales se ocultarían."
 
-#: src/feed_dialogs.rs:233
+#: src/feed_dialogs.rs:245
 msgid "Line {line}: invalid regular expression ({error})"
 msgstr "Línea {line}: expresión regular no válida ({error})"
 
-#: src/html.rs:74
+#: src/html.rs:75
 msgid "This feed has no summary. Use “Full” to read the text."
 msgstr "Este feed no incluye resumen. Usa “Completo” para leer el texto."
 
-#: src/html.rs:76
+#: src/html.rs:77
 msgid "%m/%d/%Y %H:%M"
 msgstr "%d/%m/%Y %H:%M"
 
-#: src/html.rs:79
+#: src/html.rs:84
 msgid "Full article"
 msgstr "Artículo completo"
 
@@ -433,206 +455,206 @@ msgstr "Feed no válido: {error}"
 msgid "Could not extract the content of this page"
 msgstr "No se pudo extraer el contenido de esta página"
 
-#: src/sync.rs:136
+#: src/sync.rs:143
 msgid "(untitled)"
 msgstr "(sin título)"
 
-#: src/window.rs:103
+#: src/window.rs:106
 msgid "now"
 msgstr "ahora"
 
 #. Translators: abbreviated "minutes ago" in the article list
-#: src/window.rs:105
+#: src/window.rs:108
 msgid "{n} min"
 msgstr "{n} min"
 
 #. Translators: abbreviated "hours ago" in the article list
-#: src/window.rs:107
+#: src/window.rs:110
 msgid "{n} h"
 msgstr "{n} h"
 
 #. Translators: abbreviated "days ago" in the article list
-#: src/window.rs:109
+#: src/window.rs:112
 msgid "{n} d"
 msgstr "{n} d"
 
 #. Translators: short date in the article list (strftime format)
-#: src/window.rs:111
+#: src/window.rs:114
 msgid "%m/%d/%y"
 msgstr "%d/%m/%y"
 
-#: src/window.rs:128 src/window.rs:495 src/window.rs:595
+#: src/window.rs:131 src/window.rs:506 src/window.rs:640
 msgid "Unread"
 msgstr "No leídos"
 
-#: src/window.rs:130
+#: src/window.rs:133
 msgid "Search titles and summaries"
 msgstr "Buscar en títulos y resúmenes"
 
-#: src/window.rs:143 src/window.rs:815
+#: src/window.rs:144 src/window.rs:865
 msgid "Star (S)"
 msgstr "Destacar (S)"
 
-#: src/window.rs:257
+#: src/window.rs:259
 msgid "Add feed (Ctrl+N)"
 msgstr "Añadir feed (Ctrl+N)"
 
-#: src/window.rs:263
+#: src/window.rs:265
 msgid "Import OPML…"
 msgstr "Importar OPML…"
 
-#: src/window.rs:264
+#: src/window.rs:266
 msgid "Export OPML…"
 msgstr "Exportar OPML…"
 
-#: src/window.rs:269
+#: src/window.rs:271
 msgid "About readrss"
 msgstr "Acerca de readrss"
 
-#: src/window.rs:272
+#: src/window.rs:274
 msgid "Quit"
 msgstr "Salir"
 
-#: src/window.rs:278
+#: src/window.rs:280
 msgid "Main menu"
 msgstr "Menú principal"
 
-#: src/window.rs:292
+#: src/window.rs:295
 msgid "Sync now (Ctrl+R)"
 msgstr "Sincronizar ahora (Ctrl+R)"
 
-#: src/window.rs:297
+#: src/window.rs:300
 msgid "Search (Ctrl+F)"
 msgstr "Buscar (Ctrl+F)"
 
-#: src/window.rs:304 src/window.rs:969
+#: src/window.rs:307 src/window.rs:1020
 msgid "Mark all as read"
 msgstr "Marcar todos como leídos"
 
-#: src/window.rs:316
+#: src/window.rs:319
 msgid "Nothing here"
 msgstr "No hay nada aquí"
 
-#: src/window.rs:317
+#: src/window.rs:320
 msgid "No articles in this view."
 msgstr "No hay artículos en esta vista."
 
-#: src/window.rs:328
+#: src/window.rs:331
 msgid "Summary"
 msgstr "Resumen"
 
-#: src/window.rs:328
+#: src/window.rs:331
 msgid "Summary from the feed"
 msgstr "Resumen del feed"
 
-#: src/window.rs:329
+#: src/window.rs:332
 msgid "Full"
 msgstr "Completo"
 
-#: src/window.rs:329
+#: src/window.rs:332
 msgid "Extract the full article from the site (F)"
 msgstr "Extraer el artículo completo del sitio (F)"
 
-#: src/window.rs:330
+#: src/window.rs:333
 msgid "Website"
 msgstr "Sitio web"
 
-#: src/window.rs:330
+#: src/window.rs:333
 msgid "Open the original page in the app"
 msgstr "Abrir la página original en la aplicación"
 
-#: src/window.rs:341
+#: src/window.rs:344
 msgid "Open in browser (O)"
 msgstr "Abrir en el navegador (O)"
 
-#: src/window.rs:349
+#: src/window.rs:352
 msgid "Toggle read/unread (M)"
 msgstr "Marcar como leído/no leído (M)"
 
-#: src/window.rs:494 src/window.rs:594
+#: src/window.rs:498 src/window.rs:639
 msgid "All articles"
 msgstr "Todos los artículos"
 
-#: src/window.rs:496 src/window.rs:596
+#: src/window.rs:514 src/window.rs:641
 msgid "Starred"
 msgstr "Destacados"
 
-#: src/window.rs:500
+#: src/window.rs:523
 msgid "Feeds"
 msgstr "Feeds"
 
-#: src/window.rs:545
+#: src/window.rs:583
 msgid "Filter active: some articles are hidden"
 msgstr "Filtro activo: algunas noticias están ocultas"
 
-#: src/window.rs:609
+#: src/window.rs:654
 msgid "{n} article"
 msgid_plural "{n} articles"
 msgstr[0] "{n} artículo"
 msgstr[1] "{n} artículos"
 
-#: src/window.rs:768
+#: src/window.rs:818
 msgid "Filter saved: {n} article hidden"
 msgid_plural "Filter saved: {n} articles hidden"
 msgstr[0] "Filtro guardado: {n} noticia oculta"
 msgstr[1] "Filtro guardado: {n} noticias ocultas"
 
-#: src/window.rs:770
+#: src/window.rs:820
 msgid "Filter removed"
 msgstr "Filtro eliminado"
 
-#: src/window.rs:780
+#: src/window.rs:830
 msgid "Remove feed?"
 msgstr "¿Eliminar el feed?"
 
-#: src/window.rs:781
+#: src/window.rs:831
 msgid "“{title}” and all its articles will be deleted."
 msgstr "Se eliminarán “{title}” y todos sus artículos."
 
-#: src/window.rs:784
+#: src/window.rs:834
 msgid "Remove"
 msgstr "Eliminar"
 
-#: src/window.rs:800
+#: src/window.rs:850
 msgid "“{title}” removed"
 msgstr "“{title}” eliminado"
 
-#: src/window.rs:815
+#: src/window.rs:865
 msgid "Unstar (S)"
 msgstr "Quitar de destacados (S)"
 
-#: src/window.rs:829
+#: src/window.rs:879
 msgid "Select an article to read"
 msgstr "Selecciona un artículo para leer"
 
-#: src/window.rs:830 src/window.rs:833
+#: src/window.rs:880 src/window.rs:883
 msgid "This article has no link"
 msgstr "Este artículo no tiene enlace"
 
-#: src/window.rs:836
+#: src/window.rs:886
 msgid "Loading full article…"
 msgstr "Cargando el artículo completo…"
 
-#: src/window.rs:908
+#: src/window.rs:959
 msgid "Could not extract the article: {error}"
 msgstr "No se pudo extraer el artículo: {error}"
 
-#: src/window.rs:911
+#: src/window.rs:962
 msgid "Failed to extract the article"
 msgstr "Error al extraer el artículo"
 
-#: src/window.rs:912
+#: src/window.rs:963
 msgid "View website"
 msgstr "Ver sitio web"
 
-#: src/window.rs:967
+#: src/window.rs:1018
 msgid "Edit…"
 msgstr "Editar…"
 
-#: src/window.rs:968
+#: src/window.rs:1019
 msgid "Filter…"
 msgstr "Filtrar…"
 
-#: src/window.rs:972
+#: src/window.rs:1023
 msgid "Remove feed…"
 msgstr "Eliminar feed…"

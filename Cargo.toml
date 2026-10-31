@@ -31,7 +31,7 @@ harness = false
 adw = { version = "0.9", package = "libadwaita", features = ["v1_7"] }
 gtk = { version = "0.11", package = "gtk4", features = ["v4_18"] }
 webkit6 = { version = "0.6", features = ["v2_50"] }
-rusqlite = "0.40"
+rusqlite = "0.41"
 feed-rs = "3"
 ureq = { version = "3", default-features = false, features = ["native-tls-no-default", "gzip"] }
 dom_smoothie = "0.18"

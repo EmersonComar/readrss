@@ -34,7 +34,7 @@ webkit6 = { version = "0.6", features = ["v2_50"] }
 rusqlite = "0.40"
 feed-rs = "3"
 ureq = { version = "3", default-features = false, features = ["native-tls-no-default", "gzip"] }
-dom_smoothie = "0.18"
+dom_smoothie = "0.19"
 dom_query = "0.28"
 gettext-rs = { version = "0.8", features = ["gettext-system"] }
 url = "2"

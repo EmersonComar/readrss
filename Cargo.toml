@@ -39,7 +39,7 @@ dom_query = "0.28"
 gettext-rs = { version = "0.8", features = ["gettext-system"] }
 url = "2"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
-fancy-regex = "0.19"
+fancy-regex = "0.20"
 unicode-normalization = "0.1"
 quick-xml = "0.42"
 glib-unix = "0.22"

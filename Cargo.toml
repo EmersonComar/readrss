@@ -35,7 +35,7 @@ rusqlite = "0.40"
 feed-rs = "3"
 ureq = { version = "3", default-features = false, features = ["native-tls-no-default", "gzip"] }
 dom_smoothie = "0.18"
-dom_query = "0.28"
+dom_query = "0.29"
 gettext-rs = { version = "0.8", features = ["gettext-system"] }
 url = "2"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
